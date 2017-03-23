@@ -9,7 +9,8 @@ Function Ensure-OnPath ($PathToAdd,$Scope,$PathVariable,$AddToStartOrEnd)
 {
   If (!$Scope) {$Scope='Machine'}
   If (!$PathVariable) {$PathVariable='PATH'}
-  If (!$AddToStartOrEnd) {$PathVariable='END'}
+  If (!$AddToStartOrEnd) {$AddToStartOrEnd='END'}
+  write-host "Ensuring `"$pathtoadd`" is added to the $AddToStartOrEnd of variable `"$PathVariable`" for scope `"$scope`" "
   $ExistingPathArray = @([Environment]::GetEnvironmentVariable("$PathVariable","$Scope").split(';'))
   if ($ExistingPathArray -inotcontains $PathToAdd)
   {
@@ -31,6 +32,7 @@ Function Ensure-RemovedFromPath ($PathToRemove,$Scope,$PathVariable)
   If (!$Scope) {$Scope='Machine'}
   If (!$PathVariable) {$PathVariable='PATH'}
   $ExistingPathArray = @([Environment]::GetEnvironmentVariable("$PathVariable","$Scope").split(';'))
+  write-host "Ensuring `"$pathtoadd`" is removed from variable `"$PathVariable`" for scope `"$scope`" "
   if ($ExistingPathArray -icontains $PathToRemove)
   {
     foreach ($path in $ExistingPathArray)
