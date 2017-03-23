@@ -1,2 +1,2 @@
 # CloudyWindowsAutomationCode
-Code for helping automation Windows from CloudWindows.com
+Code from the blog https://CloudWindows.com
