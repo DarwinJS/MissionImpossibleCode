@@ -72,9 +72,9 @@ if [ "$OS" == "mac" ] ; then
     echo "Configuring PowerShell and VS Code for: $DistroBasedOn distro $DIST version $REV"
 elif [ "$OS" == "linux" ] ; then
     echo "Checking Linux Family"
-    if [ "{$DistroBasedOn}" = "redhat" ] ; then
+    if [ "$DistroBasedOn" = "redhat" ] ; then
       echo "Configuring PowerShell and VS Code for: $DistroBasedOn distro $DIST version $REV"
-    elif [ "{$DistroBasedOn}" = "debian" ] ; then
+    elif [ "$DistroBasedOn" = "debian" ] ; then
       echo "Configuring PowerShell and VS Code for: $DistroBasedOn distro $DIST version $REV"    
     fi
 else
