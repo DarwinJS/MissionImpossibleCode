@@ -1,6 +1,7 @@
 #!/bin/bash
 
-bash <(curl -s https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/test.sh)
+#bash <(curl -s https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/test.sh)
+#bash curl -s https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/test.sh | bash
 
 lowercase(){
     echo "$1" | sed "y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/"
