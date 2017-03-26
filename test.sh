@@ -17,13 +17,13 @@ elif [ "{$OS}" == "darwin" ]; then
     OS=mac
 else
     OS=`uname`
-    if [ "${OS}" = "SunOS" ] ; then
+    if [ "${OS}" == "SunOS" ] ; then
         OS=Solaris
         ARCH=`uname -p`
         OSSTR="${OS} ${REV}(${ARCH} `uname -v`)"
-    elif [ "${OS}" = "AIX" ] ; then
+    elif [ "${OS}" == "AIX" ] ; then
         OSSTR="${OS} `oslevel` (`oslevel -r`)"
-    elif [ "${OS}" = "Linux" ] ; then
+    elif [ "${OS}" == "Linux" ] ; then
         if [ -f /etc/redhat-release ] ; then
             DistroBasedOn='RedHat'
             DIST=`cat /etc/redhat-release |sed s/\ release.*//`
