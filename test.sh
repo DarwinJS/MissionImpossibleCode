@@ -1,4 +1,7 @@
 #!/bin/bash
+
+bash <(curl -s https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/test.sh)
+
 lowercase(){
     echo "$1" | sed "y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/"
 }
@@ -54,10 +57,24 @@ else
     fi
 
 fi
-        echo "OS: $OS"
-        echo "DIST: $DIST"
-        echo "DistroBasedOn: $DistroBasedOn"
-        echo "PSUEDONAME: $PSUEDONAME"
-        echo "REV: $REV"
-        echo "KERNEL: $KERNEL"
-        echo "MACH: $MACH"
+
+echo "Operating System Details:"
+echo "  OS": $OS"
+echo "  DIST: $DIST"
+echo "  DistroBasedOn: $DistroBasedOn"
+echo "  PSUEDONAME: $PSUEDONAME"
+echo "  REV: $REV"
+echo "  KERNEL: $KERNEL"
+echo "  MACH: $MACH"
+
+if [ "{$OS}" == "mac" ]; then
+   echo "Configuring PowerShell and VS Code for: $DistroBasedOn distro $DIST version $REV"
+elif [ "{$OS}" == "linux" ]; then
+    if [ "{$DistroBasedOn}" == "redhat" ]; then
+        echo "Configuring PowerShell and VS Code for: $DistroBasedOn distro $DIST version $REV"
+    elif [ "{$DistroBasedOn}" == "debian" ]; then
+        echo "Configuring PowerShell and VS Code for: $DistroBasedOn distro $DIST version $REV"    
+    fi
+else
+    echo "Your operating system is not supported by PowerShell"
+if
