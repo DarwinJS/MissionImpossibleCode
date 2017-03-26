@@ -11,9 +11,9 @@ OS=`lowercase \`uname\``
 KERNEL=`uname -r`
 MACH=`uname -m`
 
-if [ "{$OS}" -eq "windowsnt" ]; then
+if [ "{$OS}" == "windowsnt" ]; then
     OS=windows
-elif [ "{$OS}" -eq "darwin" ]; then
+elif [ "{$OS}" == "darwin" ]; then
     OS=mac
 else
     OS=`uname`
