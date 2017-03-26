@@ -1,7 +1,7 @@
 #!/bin/bash
 
-#bash <(curl -s https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/test.sh)
-#bash curl -s https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/test.sh | bash
+#bash <(curl -v -H "Cache-Control: no-cache" -s https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/test.sh)
+#bash curl -v -H "Cache-Control: no-cache" -s https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/test.sh | bash
 
 lowercase(){
     echo "$1" | sed "y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/"
@@ -67,7 +67,7 @@ echo "  PSUEDONAME: $PSUEDONAME"
 echo "  REV: $REV"
 echo "  KERNEL: $KERNEL"
 echo "  MACH: $MACH"
-
+exit
 if [ "{$OS}" == "mac" ] ; then
   echo "Configuring PowerShell and VS Code for: $DistroBasedOn distro $DIST version $REV"
 elif [ "{$OS}" == "linux" ] ; then
