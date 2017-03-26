@@ -54,3 +54,10 @@ else
     fi
 
 fi
+        echo "OS: $OS"
+        echo "DIST: $DIST"
+        echo "DistroBasedOn: $DistroBasedOn"
+        echo "PSUEDONAME: $PSUEDONAME"
+        echo "REV: $REV"
+        echo "KERNEL: $KERNEL"
+        echo "MACH: $MACH"
