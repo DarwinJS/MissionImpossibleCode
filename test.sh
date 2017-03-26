@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #bash <(curl -v -H "Cache-Control: no-cache" -s https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/test.sh)
-#bash curl -v -H "Cache-Control: no-cache" -s https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/test.sh | bash
+#curl -v -H "Cache-Control: no-cache" -s https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/test.sh | bash
 
 lowercase(){
     echo "$1" | sed "y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/"
@@ -70,7 +70,7 @@ echo "  MACH: $MACH"
 
 if [ "{$OS}" == "mac" ] ; then
     echo "Configuring PowerShell and VS Code for: $DistroBasedOn distro $DIST version $REV"
-elif [ "{$OS}" == "Linux" ] ; then
+elif [ "{$OS}" == "linux" ] ; then
     echo "Checking Linux Family"
     if [ "{$DistroBasedOn}" = "redhat" ] ; then
       echo "Configuring PowerShell and VS Code for: $DistroBasedOn distro $DIST version $REV"
