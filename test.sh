@@ -71,6 +71,7 @@ echo "  MACH: $MACH"
 if [ "{$OS}" == "mac" ] ; then
     echo "Configuring PowerShell and VS Code for: $DistroBasedOn distro $DIST version $REV"
 elif [ "{$OS}" == "Linux" ] ; then
+    echo "Checking Linux Family"
     if [ "{$DistroBasedOn}" = "redhat" ] ; then
       echo "Configuring PowerShell and VS Code for: $DistroBasedOn distro $DIST version $REV"
     elif [ "{$DistroBasedOn}" = "debian" ] ; then
