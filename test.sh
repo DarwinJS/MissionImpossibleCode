@@ -78,5 +78,6 @@ elif [ "{$OS}" == "Linux" ] ; then
     fi
 else
     echo "Your operating system is not supported by PowerShell"
+    
 fi
 
