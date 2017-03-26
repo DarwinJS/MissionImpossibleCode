@@ -60,7 +60,7 @@ else
 fi
 
 echo "Operating System Details:"
-echo "  OS": $OS"
+echo "  OS: $OS"
 echo "  DIST: $DIST"
 echo "  DistroBasedOn: $DistroBasedOn"
 echo "  PSUEDONAME: $PSUEDONAME"
