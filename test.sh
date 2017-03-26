@@ -67,15 +67,4 @@ echo "  PSUEDONAME: $PSUEDONAME"
 echo "  REV: $REV"
 echo "  KERNEL: $KERNEL"
 echo "  MACH: $MACH"
-exit
-if [ "{$OS}" == "mac" ] ; then
-  echo "Configuring PowerShell and VS Code for: $DistroBasedOn distro $DIST version $REV"
-elif [ "{$OS}" == "linux" ] ; then
-  if [ "{$DistroBasedOn}" == "redhat" ] ; then
-    echo "Configuring PowerShell and VS Code for: $DistroBasedOn distro $DIST version $REV"
-  elif [ "{$DistroBasedOn}" == "debian" ] ; then
-    echo "Configuring PowerShell and VS Code for: $DistroBasedOn distro $DIST version $REV"    
-  fi
-else
-  echo "Your operating system is not supported by PowerShell"
-if
+
