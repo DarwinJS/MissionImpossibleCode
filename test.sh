@@ -11,19 +11,19 @@ OS=`lowercase \`uname\``
 KERNEL=`uname -r`
 MACH=`uname -m`
 
-if [ "{$OS}" == "windowsnt" ]; then
+if [ "{$OS}" -eq "windowsnt" ]; then
     OS=windows
-elif [ "{$OS}" == "darwin" ]; then
+elif [ "{$OS}" -eq "darwin" ]; then
     OS=mac
 else
     OS=`uname`
-    if [ "${OS}" = "SunOS" ] ; then
+    if [ "${OS}" -eq "SunOS" ] ; then
         OS=Solaris
         ARCH=`uname -p`
         OSSTR="${OS} ${REV}(${ARCH} `uname -v`)"
-    elif [ "${OS}" = "AIX" ] ; then
+    elif [ "${OS}" -eq "AIX" ] ; then
         OSSTR="${OS} `oslevel` (`oslevel -r`)"
-    elif [ "${OS}" = "Linux" ] ; then
+    elif [ "${OS}" -eq "Linux" ] ; then
         if [ -f /etc/redhat-release ] ; then
             DistroBasedOn='RedHat'
             DIST=`cat /etc/redhat-release |sed s/\ release.*//`
