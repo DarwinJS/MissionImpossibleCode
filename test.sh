@@ -70,13 +70,26 @@ echo "  MACH: $MACH"
 
 if [ "$OS" == "mac" ] ; then
     echo "Configuring PowerShell and VS Code for: $DistroBasedOn distro $DIST version $REV"
-elif [ "$OS" == "linux" ] ; then
-    echo "Checking Linux Family for $DistroBasedOn"
-    if [ "$DistroBasedOn" == "redhat" ] ; then
-      echo "Configuring PowerShell and VS Code for: $DistroBasedOn distro $DIST version $REV"
-    elif [ "$DistroBasedOn" == "debian" ] ; then
-      echo "Configuring PowerShell and VS Code for: $DistroBasedOn distro $DIST version $REV"    
-    fi
+elif [ "$DistroBasedOn" == "centos" ] ; then
+    echo "Configuring PowerShell and VS Code for: $DistroBasedOn distro $DIST version $REV"    
+
+elif [ "$DIST" == "Ubuntu" ] ; then
+      # Import the public repository GPG keys
+      curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
+      curl https://packages.microsoft.com/config/ubuntu/$REV/prod.list | sudo tee /etc/apt/sources.list.d/microsoft.list
+    #if [ "$REV" == "14.04" ] ; then
+      #echo "Configuring PowerShell and VS Code for: $DIST version $REV"
+      # Register the Microsoft Ubuntu repository 14.04
+      curl https://packages.microsoft.com/config/ubuntu/14.04/prod.list | sudo tee /etc/apt/sources.list.d/microsoft.list
+    #elif [ "$REV" == "16.04" ] ; then
+      #echo "Configuring PowerShell and VS Code for: $DIST version $REV"   
+      # Register the Microsoft Ubuntu repository
+      #curl https://packages.microsoft.com/config/ubuntu/16.04/prod.list | sudo tee /etc/apt/sources.list.d/microsoft.list 
+    #fi
+      # Update apt-get
+      sudo apt-get update
+      # Install PowerShell
+      sudo apt-get install -y powershell
 else
     echo "Your operating system is not supported by PowerShell"
 
