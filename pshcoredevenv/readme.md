@@ -2,9 +2,8 @@
 # PowerShell Core Development Environment Installer
 
 ## Design Goals
-- **Universality** - This set of installation scripts has the goal of being universal and working properly on as many target OSes as possible.  Open source contributions are hoped to broaden the number of OS versions and distros that can be successfully installed to.
+- **Universality** - This set of installation scripts has the goal of being universal and working properly on as many target OSes as possible.  Open source contributions are hoped to broaden the number of OS versions and distros that can be successfully installed to.  This also results in the code needing to use the lowest common denominator in terms of tools - for example wget is used instead of curl due to it being available by default on more distros / OSes.
 - **Run From Web or Local Execution** - quick and easy running from the web or copy and run local (seamless operation of either)
-
 
 ## Installs
 - PowerShell Core (via a repo where available)

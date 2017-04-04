@@ -32,6 +32,7 @@ if [ "{$OS}" == "windowsnt" ]; then
     OS=windows
 elif [ "{$OS}" == "darwin" ]; then
     OS=mac
+    DistroBasedOn=mac
 else
     OS=`uname`
     if [ "${OS}" == "SunOS" ] ; then
@@ -87,24 +88,13 @@ echo "  MACH: $MACH"
 
 SCRIPTFOLDER=$(dirname $(readlink -f $0))
 
-if [ "$OS" == "mac" ] ; then
-    echo "Configuring PowerShell and VS Code for: $DistroBasedOn distro $DIST version $REV"
-    echo "Although Mac is supported, there are no package repositories to allow it to be installed automatically"
-elif [ "$DistroBasedOn" == "redhat" ] || [ "$DistroBasedOn" == "debian" ]; then
-    echo "Configuring PowerShell and VS Code for: $DistroBasedOn distro $DIST version $REV"
+if [ "$DistroBasedOn" == "redhat" ] || [ "$DistroBasedOn" == "debian" ] || [ "$DistroBasedOn" == "mac" ]; then
+    echo "Configuring PowerShell and VS Code for: $DistroBasedOn $DIST $REV"
     if [ -f $SCRIPTFOLDER/pshcoredevenv-$DistroBasedOn.sh ]; then
       . $SCRIPTFOLDER/pshcoredevenv-$DistroBasedOn.sh
     else
       bash <(wget -qO- https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/pshcoredevenv/pshcoredevenv-$DistroBasedOn.sh)
    fi
-
-#elif [ "$DIST" == "Ubuntu" ] ; then
-#    echo "Configuring PowerShell and VS Code for: $DistroBasedOn distro $DIST version $REV"
-#    if [ -f $SCRIPTFOLDER/pshcoredevenv-debian.sh ]; then
-#      . $SCRIPTFOLDER/pshcoredevenv-debian.sh
-#    else
-#      bash <(curl -v -H "Cache-Control: no-cache" -s https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/pshcoredevenv/pshcoredevenv-debian.sh)
-#   fi
 else
     echo "Your operating system is not supported by this script"
 fi
