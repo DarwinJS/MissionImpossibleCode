@@ -73,11 +73,11 @@ if [ "$OS" == "mac" ] ; then
 elif [ "$DistroBasedOn" == "redhat" ] ; then
     echo "Configuring PowerShell and VS Code for: $DistroBasedOn distro $DIST version $REV"
     # Enter superuser mode
-    sudo su
+    #sudo su
     # Register the Microsoft RedHat repository
-    curl https://packages.microsoft.com/config/rhel/7/prod.repo > /etc/yum.repos.d/microsoft.repo
+    sudo curl https://packages.microsoft.com/config/rhel/7/prod.repo > /etc/yum.repos.d/microsoft.repo
     # Exit superuser mode
-    exit
+    #exit
     # Install PowerShell
     sudo yum install -y powershell
     
