@@ -8,6 +8,10 @@
 #  please do a pull request if you know how to fix a problem for your deployment scenario 
 # (without breaking the already covered, mainline scenarios)
 
+#Usage - if you do not have the ability to run scripts directly from the web, 
+#        pull all files in this repo folder and execute, the script
+#        automatically prefers local copies of sub-scripts
+
 echo "PowerShell Core Development Environment Installer Kickstarter"
 echo "Installs full PowerShell Core Development Environment:"
 echo "- PowerShell Core via Microsoft Repos (for applicable OSes)"
@@ -86,7 +90,7 @@ SCRIPTFOLDER=$(dirname $(readlink -f $0))
 if [ "$OS" == "mac" ] ; then
     echo "Configuring PowerShell and VS Code for: $DistroBasedOn distro $DIST version $REV"
     echo "Although Mac is supported, there are no package repositories to allow it to be installed automatically"
-else
+elif ["$DistroBasedOn" == "redhat" || "$DistroBasedOn" == "debian"]; then
     echo "Configuring PowerShell and VS Code for: $DistroBasedOn distro $DIST version $REV"
     if [ -f $SCRIPTFOLDER/pshcoredevenv-$DistroBasedOn.sh ]; then
       . $SCRIPTFOLDER/pshcoredevenv-$DistroBasedOn.sh
@@ -102,6 +106,6 @@ else
 #      bash <(curl -v -H "Cache-Control: no-cache" -s https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/pshcoredevenv/pshcoredevenv-debian.sh)
 #   fi
 else
-    echo "Your operating system is not supported by PowerShell"
+    echo "Your operating system is not supported by this script"
 fi
 
