@@ -70,6 +70,7 @@ echo "  MACH: $MACH"
 
 if [ "$OS" == "mac" ] ; then
     echo "Configuring PowerShell and VS Code for: $DistroBasedOn distro $DIST version $REV"
+    echo "Although Mac is supported, there are no package repositories to allow it to be installed automatically"
 elif [ "$DistroBasedOn" == "redhat" ] ; then
     echo "Configuring PowerShell and VS Code for: $DistroBasedOn distro $DIST version $REV"
     # Enter superuser mode
@@ -85,7 +86,11 @@ elif [ "$DistroBasedOn" == "redhat" ] ; then
     sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
     sudo sh -c 'echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/vscode.repo'    
     yum check-update
-    sudo yum install code
+    sudo yum install -y code
+
+    echo "Installing VS Code PowerShell Extension"
+    code --install-extension ms-vscode.PowerShell
+
 elif [ "$DIST" == "Ubuntu" ] ; then
     # Import the public repository GPG keys
     curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
@@ -110,6 +115,9 @@ elif [ "$DIST" == "Ubuntu" ] ; then
     sudo sh -c 'echo "deb [arch=amd64] http://packages.microsoft.com/repos/vscode stable main" > /etc/apt/sources.list.d/vscode.list'
     sudo apt-get update
     sudo apt-get install -y code
+
+    echo "Installing VS Code PowerShell Extension"
+    code --install-extension ms-vscode.PowerShell
 else
     echo "Your operating system is not supported by PowerShell"
 
