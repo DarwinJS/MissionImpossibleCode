@@ -12,7 +12,8 @@
 #        pull all files in this repo folder and execute, the script
 #        automatically prefers local copies of sub-scripts
 
-echo "PowerShell Core Development Environment Installer Kickstarter"
+VERSION="1.1.0""
+echo "PowerShell Core Development Environment Installer Kickstarter Version $VERSION"
 echo "Installs full PowerShell Core Development Environment:"
 echo "- PowerShell Core via Microsoft Repos (for applicable OSes)"
 echo "- Visual Studio Code via Microsoft Repos (for applicable OSes)"
