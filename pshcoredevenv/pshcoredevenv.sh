@@ -1,7 +1,16 @@
 #!/bin/bash
 
-#bash <(curl -v -H "Cache-Control: no-cache" -s https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/test.sh)
-#curl -v -H "Cache-Control: no-cache" -s https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/test.sh | bash
+#Companion code for the blog https://cloudywindows.com
+#call this code direction from the web with:
+#bash <(curl -v -H "Cache-Control: no-cache" -s https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/pshcoredevenv/pshcoredevenv.sh)
+
+echo "PowerShell Core Development Environment Installer Kickstarter"
+echo "Installs full PowerShell Core Development Environment:"
+echo "- PowerShell Core via Microsoft Repos (for applicable OSes)"
+echo "- Visual Studio Code via Microsoft Repos (for applicable OSes)"
+echo "- Visual Studio Code Plug-in for PowerShell (ms-vscode.PowerShell)"
+
+echo "Determining the OS and doing prerequisite work for those that require it..."
 
 lowercase(){
     echo "$1" | sed "y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/"
@@ -73,53 +82,12 @@ if [ "$OS" == "mac" ] ; then
     echo "Although Mac is supported, there are no package repositories to allow it to be installed automatically"
 elif [ "$DistroBasedOn" == "redhat" ] ; then
     echo "Configuring PowerShell and VS Code for: $DistroBasedOn distro $DIST version $REV"
-    # Enter superuser mode
-    #sudo su
-    # Register the Microsoft RedHat repository
-    sudo curl https://packages.microsoft.com/config/rhel/7/prod.repo > /etc/yum.repos.d/microsoft.repo
-    # Exit superuser mode
-    #exit
-    # Install PowerShell
-    sudo yum install -y powershell
-    
-    echo "Installing VS Code..."
-    sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
-    sudo sh -c 'echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/vscode.repo'    
-    yum check-update
-    sudo yum install -y code
-
-    echo "Installing VS Code PowerShell Extension"
-    code --install-extension ms-vscode.PowerShell
+    bash <(curl -v -H "Cache-Control: no-cache" -s https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/pshcoredevenv/pshcoredevenv-redhat.sh)
 
 elif [ "$DIST" == "Ubuntu" ] ; then
-    # Import the public repository GPG keys
-    curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
-    curl https://packages.microsoft.com/config/ubuntu/$REV/prod.list | sudo tee /etc/apt/sources.list.d/microsoft.list
-    #if [ "$REV" == "14.04" ] ; then
-      #echo "Configuring PowerShell and VS Code for: $DIST version $REV"
-      # Register the Microsoft Ubuntu repository 14.04
-      curl https://packages.microsoft.com/config/ubuntu/14.04/prod.list | sudo tee /etc/apt/sources.list.d/microsoft.list
-    #elif [ "$REV" == "16.04" ] ; then
-      #echo "Configuring PowerShell and VS Code for: $DIST version $REV"   
-      # Register the Microsoft Ubuntu repository
-      #curl https://packages.microsoft.com/config/ubuntu/16.04/prod.list | sudo tee /etc/apt/sources.list.d/microsoft.list 
-    #fi
-    # Update apt-get
-    sudo apt-get update
-    # Install PowerShell
-    sudo apt-get install -y powershell
-
-    echo "Installing VS Code..."
-    curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
-    sudo mv microsoft.gpg /etc/apt/trusted.gpg.d/microsoft.gpg
-    sudo sh -c 'echo "deb [arch=amd64] http://packages.microsoft.com/repos/vscode stable main" > /etc/apt/sources.list.d/vscode.list'
-    sudo apt-get update
-    sudo apt-get install -y code
-
-    echo "Installing VS Code PowerShell Extension"
-    code --install-extension ms-vscode.PowerShell
+    echo "Configuring PowerShell and VS Code for: $DistroBasedOn distro $DIST version $REV"
+    bash <(curl -v -H "Cache-Control: no-cache" -s https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/pshcoredevenv/pshcoredevenv-debian.sh)
 else
     echo "Your operating system is not supported by PowerShell"
-
 fi
 

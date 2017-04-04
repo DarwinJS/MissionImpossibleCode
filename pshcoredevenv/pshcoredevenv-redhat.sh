@@ -1,5 +1,10 @@
 #!/bin/bash
 
+#Companion code for the blog https://cloudywindows.com
+#call this code direction from the web with:
+#bash <(curl -v -H "Cache-Control: no-cache" -s https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/pshcoredevenv/pshcoredevenv-redhat.sh)
+
+echo "Processing for Redhat 7"
 echo "Installing PowerShell Core..."
 sudo curl https://packages.microsoft.com/config/rhel/7/prod.repo > /etc/yum.repos.d/microsoft.repo
 sudo yum install -y powershell
