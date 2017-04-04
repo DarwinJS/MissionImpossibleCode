@@ -90,7 +90,7 @@ SCRIPTFOLDER=$(dirname $(readlink -f $0))
 if [ "$OS" == "mac" ] ; then
     echo "Configuring PowerShell and VS Code for: $DistroBasedOn distro $DIST version $REV"
     echo "Although Mac is supported, there are no package repositories to allow it to be installed automatically"
-elif [ "$DistroBasedOn" == "redhat" ] | [ "$DistroBasedOn" == "debian" ]; then
+elif [ "$DistroBasedOn" == "redhat" ] || [ "$DistroBasedOn" == "debian" ]; then
     echo "Configuring PowerShell and VS Code for: $DistroBasedOn distro $DIST version $REV"
     if [ -f $SCRIPTFOLDER/pshcoredevenv-$DistroBasedOn.sh ]; then
       . $SCRIPTFOLDER/pshcoredevenv-$DistroBasedOn.sh
