@@ -70,7 +70,7 @@ echo "  MACH: $MACH"
 
 if [ "$OS" == "mac" ] ; then
     echo "Configuring PowerShell and VS Code for: $DistroBasedOn distro $DIST version $REV"
-elif [ "$DistroBasedOn" == "centos" ] ; then
+elif [ "$DistroBasedOn" == "redhat" ] ; then
     echo "Configuring PowerShell and VS Code for: $DistroBasedOn distro $DIST version $REV"
     # Enter superuser mode
     sudo su
