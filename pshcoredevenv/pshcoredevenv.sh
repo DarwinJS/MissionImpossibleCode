@@ -13,8 +13,8 @@
 #        automatically prefers local copies of sub-scripts
 
 VERSION="1.1.0""
-echo "PowerShell Core Development Environment Installer Kickstarter Version $VERSION"
-echo "Installs full PowerShell Core Development Environment:"
+echo "PowerShell Core Development Environment Installer Kickstarter Version ${VERSION}"
+echo "Installs full PowerShell Core Development Environment"
 echo "- PowerShell Core via Microsoft Repos (for applicable OSes)"
 echo "- Visual Studio Code via Microsoft Repos (for applicable OSes)"
 echo "- Visual Studio Code Plug-in for PowerShell (ms-vscode.PowerShell)"
