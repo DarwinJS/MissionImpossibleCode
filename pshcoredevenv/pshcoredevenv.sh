@@ -91,8 +91,10 @@ SCRIPTFOLDER=$(dirname $(readlink -f $0))
 if [ "$DistroBasedOn" == "redhat" ] || [ "$DistroBasedOn" == "debian" ] || [ "$DistroBasedOn" == "mac" ]; then
     echo "Configuring PowerShell and VS Code for: $DistroBasedOn $DIST $REV"
     if [ -f $SCRIPTFOLDER/pshcoredevenv-$DistroBasedOn.sh ]; then
+      #Script files were copied local - use them
       . $SCRIPTFOLDER/pshcoredevenv-$DistroBasedOn.sh
     else
+      #Script files are not local - pull from remote
       bash <(wget -qO- https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/pshcoredevenv/pshcoredevenv-$DistroBasedOn.sh)
    fi
 else
