@@ -71,7 +71,21 @@ echo "  MACH: $MACH"
 if [ "$OS" == "mac" ] ; then
     echo "Configuring PowerShell and VS Code for: $DistroBasedOn distro $DIST version $REV"
 elif [ "$DistroBasedOn" == "centos" ] ; then
-    echo "Configuring PowerShell and VS Code for: $DistroBasedOn distro $DIST version $REV"    
+    echo "Configuring PowerShell and VS Code for: $DistroBasedOn distro $DIST version $REV"
+    # Enter superuser mode
+    sudo su
+    # Register the Microsoft RedHat repository
+    curl https://packages.microsoft.com/config/rhel/7/prod.repo > /etc/yum.repos.d/microsoft.repo
+    # Exit superuser mode
+    exit
+    # Install PowerShell
+    sudo yum install -y powershell
+    
+    echo "Installing VS Code..."
+    sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
+    sudo sh -c 'echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/vscode.repo'    
+    yum check-update
+    sudo yum install code
 
 elif [ "$DIST" == "Ubuntu" ] ; then
       # Import the public repository GPG keys
@@ -90,6 +104,13 @@ elif [ "$DIST" == "Ubuntu" ] ; then
       sudo apt-get update
       # Install PowerShell
       sudo apt-get install -y powershell
+
+      echo "Installing VS Code..."
+      curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
+      sudo mv microsoft.gpg /etc/apt/trusted.gpg.d/microsoft.gpg
+      sudo sh -c 'echo "deb [arch=amd64] http://packages.microsoft.com/repos/vscode stable main" > /etc/apt/sources.list.d/vscode.list'
+      sudo apt-get update
+      sudo apt-get install -y code
 else
     echo "Your operating system is not supported by PowerShell"
 
