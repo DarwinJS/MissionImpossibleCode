@@ -94,13 +94,13 @@ else
       bash <(wget -qO- https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/pshcoredevenv/pshcoredevenv-$DistroBasedOn.sh)
    fi
 
-elif [ "$DIST" == "Ubuntu" ] ; then
-    echo "Configuring PowerShell and VS Code for: $DistroBasedOn distro $DIST version $REV"
-    if [ -f $SCRIPTFOLDER/pshcoredevenv-debian.sh ]; then
-      . $SCRIPTFOLDER/pshcoredevenv-debian.sh
-    else
-      bash <(curl -v -H "Cache-Control: no-cache" -s https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/pshcoredevenv/pshcoredevenv-debian.sh)
-   fi
+#elif [ "$DIST" == "Ubuntu" ] ; then
+#    echo "Configuring PowerShell and VS Code for: $DistroBasedOn distro $DIST version $REV"
+#    if [ -f $SCRIPTFOLDER/pshcoredevenv-debian.sh ]; then
+#      . $SCRIPTFOLDER/pshcoredevenv-debian.sh
+#    else
+#      bash <(curl -v -H "Cache-Control: no-cache" -s https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/pshcoredevenv/pshcoredevenv-debian.sh)
+#   fi
 else
     echo "Your operating system is not supported by PowerShell"
 fi
