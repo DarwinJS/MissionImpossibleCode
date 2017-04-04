@@ -2,7 +2,7 @@
 
 #Companion code for the blog https://cloudywindows.com
 #call this code direction from the web with:
-#bash <(curl -v -H "Cache-Control: no-cache" -s https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/pshcoredevenv/pshcoredevenv.sh)
+#bash <(wget -O - https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/pshcoredevenv/pshcoredevenv.sh)
 
 #Your help is needed - there is no possible way I can test on every version of every distro - 
 #  please do a pull request if you know how to fix a problem for your deployment scenario 
@@ -86,12 +86,12 @@ SCRIPTFOLDER=$(dirname $(readlink -f $0))
 if [ "$OS" == "mac" ] ; then
     echo "Configuring PowerShell and VS Code for: $DistroBasedOn distro $DIST version $REV"
     echo "Although Mac is supported, there are no package repositories to allow it to be installed automatically"
-elif [ "$DistroBasedOn" == "redhat" ] ; then
+else
     echo "Configuring PowerShell and VS Code for: $DistroBasedOn distro $DIST version $REV"
-    if [ -f $SCRIPTFOLDER/pshcoredevenv-redhat.sh ]; then
-      . $SCRIPTFOLDER/pshcoredevenv-redhat.sh
+    if [ -f $SCRIPTFOLDER/pshcoredevenv-$DistroBasedOn.sh ]; then
+      . $SCRIPTFOLDER/pshcoredevenv-$DistroBasedOn.sh
     else
-      bash <(curl -v -H "Cache-Control: no-cache" -s https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/pshcoredevenv/pshcoredevenv-redhat.sh)
+      bash <(wget -qO- https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/pshcoredevenv/pshcoredevenv-$DistroBasedOn.sh)
    fi
 
 elif [ "$DIST" == "Ubuntu" ] ; then
