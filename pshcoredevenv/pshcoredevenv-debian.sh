@@ -4,8 +4,9 @@
 #call this code direction from the web with:
 #bash <(curl -v -H "Cache-Control: no-cache" -s https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/pshcoredevenv/pshcoredevenv-debian.sh)
 
-echo "Processing for Debian"
+echo "PowerShell Core Development Environment Installer for Debian"
 
+echo "Installing PowerShell Core..."
 REV=`cat /etc/lsb-release | grep '^DISTRIB_RELEASE' | awk -F=  '{ print $2 }'`
 
 # Import the public repository GPG keys

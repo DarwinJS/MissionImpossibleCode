@@ -77,16 +77,26 @@ echo "  REV: $REV"
 echo "  KERNEL: $KERNEL"
 echo "  MACH: $MACH"
 
+SCRIPTFOLDER=$(dirname $(readlink -f $0))
+
 if [ "$OS" == "mac" ] ; then
     echo "Configuring PowerShell and VS Code for: $DistroBasedOn distro $DIST version $REV"
     echo "Although Mac is supported, there are no package repositories to allow it to be installed automatically"
 elif [ "$DistroBasedOn" == "redhat" ] ; then
     echo "Configuring PowerShell and VS Code for: $DistroBasedOn distro $DIST version $REV"
-    bash <(curl -v -H "Cache-Control: no-cache" -s https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/pshcoredevenv/pshcoredevenv-redhat.sh)
+    if [ -f $SCRIPTFOLDER/pshcoredevenv-redhat.sh ]; then
+      . $SCRIPTFOLDER/pshcoredevenv-redhat.sh
+    else
+      bash <(curl -v -H "Cache-Control: no-cache" -s https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/pshcoredevenv/pshcoredevenv-redhat.sh)
+   fi
 
 elif [ "$DIST" == "Ubuntu" ] ; then
     echo "Configuring PowerShell and VS Code for: $DistroBasedOn distro $DIST version $REV"
-    bash <(curl -v -H "Cache-Control: no-cache" -s https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/pshcoredevenv/pshcoredevenv-debian.sh)
+    if [ -f $SCRIPTFOLDER/pshcoredevenv-debian.sh ]; then
+      . $SCRIPTFOLDER/pshcoredevenv-debian.sh
+    else
+      bash <(curl -v -H "Cache-Control: no-cache" -s https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/pshcoredevenv/pshcoredevenv-debian.sh)
+   fi
 else
     echo "Your operating system is not supported by PowerShell"
 fi
