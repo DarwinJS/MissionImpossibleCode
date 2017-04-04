@@ -86,11 +86,10 @@ elif [ "$DistroBasedOn" == "redhat" ] ; then
     sudo sh -c 'echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/vscode.repo'    
     yum check-update
     sudo yum install code
-
 elif [ "$DIST" == "Ubuntu" ] ; then
-      # Import the public repository GPG keys
-      curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
-      curl https://packages.microsoft.com/config/ubuntu/$REV/prod.list | sudo tee /etc/apt/sources.list.d/microsoft.list
+    # Import the public repository GPG keys
+    curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
+    curl https://packages.microsoft.com/config/ubuntu/$REV/prod.list | sudo tee /etc/apt/sources.list.d/microsoft.list
     #if [ "$REV" == "14.04" ] ; then
       #echo "Configuring PowerShell and VS Code for: $DIST version $REV"
       # Register the Microsoft Ubuntu repository 14.04
@@ -100,17 +99,17 @@ elif [ "$DIST" == "Ubuntu" ] ; then
       # Register the Microsoft Ubuntu repository
       #curl https://packages.microsoft.com/config/ubuntu/16.04/prod.list | sudo tee /etc/apt/sources.list.d/microsoft.list 
     #fi
-      # Update apt-get
-      sudo apt-get update
-      # Install PowerShell
-      sudo apt-get install -y powershell
+    # Update apt-get
+    sudo apt-get update
+    # Install PowerShell
+    sudo apt-get install -y powershell
 
-      echo "Installing VS Code..."
-      curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
-      sudo mv microsoft.gpg /etc/apt/trusted.gpg.d/microsoft.gpg
-      sudo sh -c 'echo "deb [arch=amd64] http://packages.microsoft.com/repos/vscode stable main" > /etc/apt/sources.list.d/vscode.list'
-      sudo apt-get update
-      sudo apt-get install -y code
+    echo "Installing VS Code..."
+    curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
+    sudo mv microsoft.gpg /etc/apt/trusted.gpg.d/microsoft.gpg
+    sudo sh -c 'echo "deb [arch=amd64] http://packages.microsoft.com/repos/vscode stable main" > /etc/apt/sources.list.d/vscode.list'
+    sudo apt-get update
+    sudo apt-get install -y code
 else
     echo "Your operating system is not supported by PowerShell"
 
