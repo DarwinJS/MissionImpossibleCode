@@ -43,7 +43,7 @@ if [[ "$#" == "NONITERACTIVE" ]]; then
   echo "Install complete"  
 else
   echo "Loading test code in VS Code"
-  code <(wget -O - https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/pshcoredevenv/testpowershell.ps1)
+  wget -O - https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/pshcoredevenv/testpowershell.ps1 | code
   #wget -O ./testpowershell.ps1 https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/pshcoredevenv/testpowershell.ps1
   #code ./testpowershell.ps1
 fi
