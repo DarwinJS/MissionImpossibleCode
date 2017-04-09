@@ -34,6 +34,6 @@ sudo apt-get install -y code
 echo "Installing VS Code PowerShell Extension"
 code --install-extension ms-vscode.PowerShell
 
-wget -qO- https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/pshcoredevenv/testpowershell.ps1 > ./testpowershell.ps1
+wget -O testpowershell.ps1 https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/pshcoredevenv/testpowershell.ps1
 
 code ./testpowershell.ps1
