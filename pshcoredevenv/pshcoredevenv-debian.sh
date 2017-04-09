@@ -8,15 +8,14 @@
 #  please do a pull request if you know how to fix a problem for your deployment scenario 
 # (without breaking the already covered, mainline scenarios)
 
-VERSION="1.1.0"
+VERSION="1.1.1"
 echo ""
-echo "Debian: PowerShell Core Development Environment Installer $VERSION"
+echo "*** Debian: PowerShell Core Development Environment Installer $VERSION"
 
-echo "Arguments used:"
-echo $@
+echo "*** Arguments used: $*"
 echo ""
 
-echo "Installing PowerShell Core..."
+echo "*** Installing PowerShell Core..."
 sudo apt-get install -y curl
 
 REV=`cat /etc/lsb-release | grep '^DISTRIB_RELEASE' | awk -F=  '{ print $2 }'`
@@ -30,21 +29,21 @@ sudo apt-get update
 # Install PowerShell
 sudo apt-get install -y powershell
 
-echo "Installing VS Code..."
+echo "*** Installing VS Code..."
 curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
 sudo mv microsoft.gpg /etc/apt/trusted.gpg.d/microsoft.gpg
 sudo sh -c 'echo "deb [arch=amd64] http://packages.microsoft.com/repos/vscode stable main" > /etc/apt/sources.list.d/vscode.list'
 sudo apt-get update
 sudo apt-get install -y code
 
-echo "Installing VS Code PowerShell Extension"
+echo "*** Installing VS Code PowerShell Extension"
 code --install-extension ms-vscode.PowerShell
 
 argstring="'$*'"
-if [[ $argstring =~ NONITERACTIVE ]] ; then
-    echo "Install Complete"
+if [[ $* =~ NONITERACTIVE ]] ; then
+    echo "*** Install Complete"
 else
-    echo "Loading test code in VS Code"
+    echo "*** Loading test code in VS Code"
     wget -O ./testpowershell.ps1 https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/pshcoredevenv/testpowershell.ps1
     code ./testpowershell.ps1        
 fi
