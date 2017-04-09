@@ -39,7 +39,7 @@ sudo apt-get install -y code
 echo "Installing VS Code PowerShell Extension"
 code --install-extension ms-vscode.PowerShell
 
-if [[ "$@" == "NONITERACTIVE" ]]; then
+if [[ "$#" == "NONITERACTIVE" ]]; then
   echo "Install complete"  
 else
   echo "Loading test code in VS Code"
