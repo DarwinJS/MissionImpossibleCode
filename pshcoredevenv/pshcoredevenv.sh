@@ -2,7 +2,8 @@
 
 #Companion code for the blog https://cloudywindows.com
 #call this code direction from the web with:
-#bash <(wget -O - https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/pshcoredevenv/pshcoredevenv.sh)
+#bash <(wget -O - https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/pshcoredevenv/pshcoredevenv.sh) NONINTERACTIVE
+#wget -O - https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/pshcoredevenv/pshcoredevenv.sh | bash -s NONINTERACTIVE
 
 #Your help is needed - there is no possible way I can test on every version of every distro - 
 #  please do a pull request if you know how to fix a problem for your deployment scenario 
@@ -99,7 +100,7 @@ if [ "$DistroBasedOn" == "redhat" ] || [ "$DistroBasedOn" == "debian" ] || [ "$D
       . $SCRIPTFOLDER/pshcoredevenv-$DistroBasedOn.sh
     else
       #Script files are not local - pull from remote
-      bash <(wget -qO- https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/pshcoredevenv/pshcoredevenv-$DistroBasedOn.sh)
+      bash <(wget -qO- https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/pshcoredevenv/pshcoredevenv-$DistroBasedOn.sh) $@
    fi
 else
     echo "Your operating system is not supported by this script"
