@@ -8,7 +8,7 @@
 #  please do a pull request if you know how to fix a problem for your deployment scenario 
 # (without breaking the already covered, mainline scenarios)
 
-VERSION="1.1.1"
+VERSION="1.1.2"
 echo ""
 echo "*** DEBIAN: PowerShell Core Development Environment Installer $VERSION"
 
