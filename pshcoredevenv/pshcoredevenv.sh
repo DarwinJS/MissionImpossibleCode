@@ -20,8 +20,7 @@ echo "- PowerShell Core via Microsoft Repos (for applicable OSes)"
 echo "- Visual Studio Code via Microsoft Repos (for applicable OSes)"
 echo "- Visual Studio Code Plug-in for PowerShell (ms-vscode.PowerShell)"
 
-echo "Arguments used:"
-echo $@
+echo "Arguments used: $*"
 echo ""
 echo "Determining the OS and doing prerequisite work for those that require it..."
 

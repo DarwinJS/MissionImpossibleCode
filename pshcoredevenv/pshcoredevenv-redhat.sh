@@ -9,10 +9,9 @@
 # (without breaking the already covered, mainline scenarios)
 
 echo ""
-echo "Redhat: PowerShell Core Development Environment Installer"
+echo "REDHAT: PowerShell Core Development Environment Installer"
 
-echo "Arguments used:"
-echo $@
+echo "Arguments used: $*"
 echo ""
 
 echo "Installing PowerShell Core..."

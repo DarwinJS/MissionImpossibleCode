@@ -10,7 +10,7 @@
 
 VERSION="1.1.1"
 echo ""
-echo "*** Debian: PowerShell Core Development Environment Installer $VERSION"
+echo "*** DEBIAN: PowerShell Core Development Environment Installer $VERSION"
 
 echo "*** Arguments used: $*"
 echo ""
