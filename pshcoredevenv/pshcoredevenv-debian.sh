@@ -11,6 +11,8 @@
 echo "PowerShell Core Development Environment Installer for Debian"
 
 echo "Installing PowerShell Core..."
+sudo apt-get install -y curl
+
 REV=`cat /etc/lsb-release | grep '^DISTRIB_RELEASE' | awk -F=  '{ print $2 }'`
 
 # Import the public repository GPG keys
