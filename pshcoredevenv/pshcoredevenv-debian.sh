@@ -10,6 +10,10 @@
 
 echo "PowerShell Core Development Environment Installer for Debian"
 
+echo "Arguments used:"
+echo $@
+echo ""
+
 echo "Installing PowerShell Core..."
 sudo apt-get install -y curl
 
