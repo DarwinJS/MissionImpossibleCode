@@ -8,7 +8,8 @@
 #  please do a pull request if you know how to fix a problem for your deployment scenario 
 # (without breaking the already covered, mainline scenarios)
 
-echo "PowerShell Core Development Environment Installer for Debian"
+echo ""
+echo "Debian: PowerShell Core Development Environment Installer"
 
 echo "Arguments used:"
 echo $@

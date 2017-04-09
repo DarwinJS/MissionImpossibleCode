@@ -8,11 +8,13 @@
 #  please do a pull request if you know how to fix a problem for your deployment scenario 
 # (without breaking the already covered, mainline scenarios)
 
+echo ""
+echo "Redhat: PowerShell Core Development Environment Installer"
+
 echo "Arguments used:"
 echo $@
 echo ""
 
-echo "PowerShell Core Development Environment Installer for Redhat 7"
 echo "Installing PowerShell Core..."
 sudo curl https://packages.microsoft.com/config/rhel/7/prod.repo > /etc/yum.repos.d/microsoft.repo
 sudo yum install -y powershell
