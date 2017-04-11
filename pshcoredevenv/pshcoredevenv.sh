@@ -12,6 +12,8 @@
 #Usage - if you do not have the ability to run scripts directly from the web, 
 #        pull all files in this repo folder and execute, the script
 #        automatically prefers local copies of sub-scripts
+#  -noninteractive - the script is being run headless, do not perform actions that require response from the console
+#  -onlypowershell - only load PowerShell (e.g. non-GUI server machines)
 
 VERSION="1.1.0"
 echo "PowerShell Core Development Environment Installer Kickstarter Version $VERSION"

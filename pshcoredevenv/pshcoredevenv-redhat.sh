@@ -9,8 +9,10 @@
 # (without breaking the already covered, mainline scenarios)
 
 VERSION="1.1.1"
+currentpshversion=`curl https://api.github.com/repos/powershell/powershell/releases/latest | sed '/tag_name/!d' | sed s/\"tag_name\"://g | sed s/\"//g | sed s/,//g | sed s/\ //g`
 echo ""
-echo "REDHAT: PowerShell Core Development Environment Installer $VERSION
+echo "REDHAT: PowerShell Core Development Environment Installer $VERSION"
+echo "    Current PowerShell Core Version: $currentpshversion"
 
 echo "Arguments used: $*"
 echo ""
@@ -19,14 +21,18 @@ echo "Installing PowerShell Core..."
 sudo curl https://packages.microsoft.com/config/rhel/7/prod.repo > /etc/yum.repos.d/microsoft.repo
 sudo yum install -y powershell
 
-echo "Installing VS Code..."
-sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
-sudo sh -c 'echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/vscode.repo'    
-yum check-update
-sudo yum install -y code
-
-echo "Installing VS Code PowerShell Extension"
-code --install-extension ms-vscode.PowerShell
+if [[ "'$*'" =~ onlypowershell ]] ; then
+    echo "*** Install Complete"
+else
+    echo "Installing VS Code..."
+    sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
+    sudo sh -c 'echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/vscode.repo'    
+    yum check-update
+    sudo yum install -y code
+    
+    echo "Installing VS Code PowerShell Extension"
+    code --install-extension ms-vscode.PowerShell
+fi
 
 if [[ "'$*'" =~ NONINTERACTIVE ]] ; then
     echo "*** Install Complete"

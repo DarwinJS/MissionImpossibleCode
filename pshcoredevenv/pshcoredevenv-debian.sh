@@ -9,8 +9,10 @@
 # (without breaking the already covered, mainline scenarios)
 
 VERSION="1.1.2"
+currentpshversion=`curl https://api.github.com/repos/powershell/powershell/releases/latest | sed '/tag_name/!d' | sed s/\"tag_name\"://g | sed s/\"//g | sed s/,//g | sed s/\ //g`
 echo ""
 echo "*** DEBIAN: PowerShell Core Development Environment Installer $VERSION"
+echo "    Current PowerShell Core Version: $currentpshversion"
 
 echo "*** Arguments used: $*"
 echo ""
@@ -29,17 +31,22 @@ sudo apt-get update
 # Install PowerShell
 sudo apt-get install -y powershell
 
-echo "*** Installing VS Code..."
-curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
-sudo mv microsoft.gpg /etc/apt/trusted.gpg.d/microsoft.gpg
-sudo sh -c 'echo "deb [arch=amd64] http://packages.microsoft.com/repos/vscode stable main" > /etc/apt/sources.list.d/vscode.list'
-sudo apt-get update
-sudo apt-get install -y code
+if [[ "'$*'" =~ onlypowershell ]] ; then
+    echo "*** Install Complete"
+else
+    echo "*** Installing VS Code..."
+    curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
+    sudo mv microsoft.gpg /etc/apt/trusted.gpg.d/microsoft.gpg
+    sudo sh -c 'echo "deb [arch=amd64] http://packages.microsoft.com/repos/vscode stable main" > /etc/apt/sources.list.d/vscode.list'
+    sudo apt-get update
+    sudo apt-get install -y code
 
-echo "*** Installing VS Code PowerShell Extension"
-code --install-extension ms-vscode.PowerShell
+    echo "*** Installing VS Code PowerShell Extension"
+    code --install-extension ms-vscode.PowerShell
+fi
 
-if [[ "'$*'" =~ NONINTERACTIVE ]] ; then
+
+if [[ "'$*'" =~ noninteractive ]] ; then
     echo "*** Install Complete"
 else
     echo "*** Loading test code in VS Code"
