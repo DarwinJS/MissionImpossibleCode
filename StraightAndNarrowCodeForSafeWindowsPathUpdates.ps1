@@ -10,6 +10,7 @@ Function Ensure-OnPath ($PathToAdd,$Scope,$PathVariable,$AddToStartOrEnd)
   If (!$Scope) {$Scope='Machine'}
   If (!$PathVariable) {$PathVariable='PATH'}
   If (!$AddToStartOrEnd) {$AddToStartOrEnd='END'}
+  If (($PathToAdd -ilike '*%*') -AND ($Scope -ieq 'Process')) {Throw 'Unexpanded environment variables do not work on the Process level path'}
   write-host "Ensuring `"$pathtoadd`" is added to the $AddToStartOrEnd of variable `"$PathVariable`" for scope `"$scope`" "
   $ExistingPathArray = @([Environment]::GetEnvironmentVariable("$PathVariable","$Scope").split(';'))
   if (($ExistingPathArray -inotcontains $PathToAdd) -AND ($ExistingPathArray -inotcontains "$PathToAdd\"))
@@ -25,8 +26,14 @@ Function Ensure-OnPath ($PathToAdd,$Scope,$PathVariable,$AddToStartOrEnd)
 
 #Test code
 Ensure-OnPath '%TEST%\bin'
-Ensure-OnPath '%TEST%\bin' 'Process' #Make path immediately available in current process
+$env:ABC = 'C:\ABC'
 Ensure-OnPath '%ABC%' 'Machine' 'PSModulePath' 'START'
+Ensure-OnPath 'C:\ABC' 'Process' 'PSModulePath' 'START' #Make available in current process, can't use environment variables
+
+#Show Modification Results
+[Environment]::GetEnvironmentVariable("PATH","Process")
+[Environment]::GetEnvironmentVariable("PSModulePath","Machine")
+[Environment]::GetEnvironmentVariable("PSModulePath","Process")
 
 Function Ensure-RemovedFromPath ($PathToRemove,$Scope,$PathVariable)
 {
@@ -54,4 +61,9 @@ Function Ensure-RemovedFromPath ($PathToRemove,$Scope,$PathVariable)
 #Test code (undoes changes from Ensure-OnPath test code)
 Ensure-RemovedFromPath '%TEST%\bin'
 Ensure-RemovedFromPath '%ABC%' 'Machine' 'PSModulePath'
+Ensure-RemovedFromPath 'C:\ABC' 'Machine' 'PSModulePath'
 
+#Show Modification Results
+[Environment]::GetEnvironmentVariable("PATH","Machine")
+[Environment]::GetEnvironmentVariable("PSModulePath","Machine")
+[Environment]::GetEnvironmentVariable("PSModulePath","Process")
