@@ -12,7 +12,7 @@ Function Ensure-OnPath ($PathToAdd,$Scope,$PathVariable,$AddToStartOrEnd)
   If (!$AddToStartOrEnd) {$AddToStartOrEnd='END'}
   write-host "Ensuring `"$pathtoadd`" is added to the $AddToStartOrEnd of variable `"$PathVariable`" for scope `"$scope`" "
   $ExistingPathArray = @([Environment]::GetEnvironmentVariable("$PathVariable","$Scope").split(';'))
-  if ($ExistingPathArray -inotcontains $PathToAdd)
+  if (($ExistingPathArray -inotcontains $PathToAdd) -AND ($ExistingPathArray -inotcontains "$PathToAdd\"))
   {
     If ($AddToStartOrEnd -ieq 'START')
     { $Newpath = @("$PathToAdd") + $ExistingPathArray }
@@ -25,6 +25,7 @@ Function Ensure-OnPath ($PathToAdd,$Scope,$PathVariable,$AddToStartOrEnd)
 
 #Test code
 Ensure-OnPath '%TEST%\bin'
+Ensure-OnPath '%TEST%\bin' 'Process' #Make path immediately available in current process
 Ensure-OnPath '%ABC%' 'Machine' 'PSModulePath' 'START'
 
 Function Ensure-RemovedFromPath ($PathToRemove,$Scope,$PathVariable)
@@ -33,7 +34,7 @@ Function Ensure-RemovedFromPath ($PathToRemove,$Scope,$PathVariable)
   If (!$PathVariable) {$PathVariable='PATH'}
   $ExistingPathArray = @([Environment]::GetEnvironmentVariable("$PathVariable","$Scope").split(';'))
   write-host "Ensuring `"$pathtoadd`" is removed from variable `"$PathVariable`" for scope `"$scope`" "
-  if ($ExistingPathArray -icontains $PathToRemove)
+  if (($ExistingPathArray -icontains $PathToRemove) -OR ($ExistingPathArray -icontains "$PathToRemove\"))
   {
     foreach ($path in $ExistingPathArray)
     {
