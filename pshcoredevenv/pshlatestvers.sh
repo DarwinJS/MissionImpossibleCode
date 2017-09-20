@@ -1,3 +1,0 @@
-#Generally for MacOS install to find latest releases since there is not a repo
-POWERSHELLCORELATEST=
-VSCODELATEST=
