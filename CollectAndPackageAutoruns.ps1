@@ -11,6 +11,6 @@ If (![bool]([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIde
 Invoke-WebRequest -Uri 'http://live.sysinternals.com/autoruns.exe'  -outfile "$env:public\autoruns.exe"
 cd $env:PUBLIC
 $Filename = "$env:PUBLIC\Autoruns-$env:Computername-$(Get-date -format 'yyMMdd-hhmmss').arn"
-Start-Process "$env:public\autoruns.exe" -ArgumentList "-e -a $Filename"
+Start-Process "$env:public\autoruns.exe" -ArgumentList "-e -a $Filename" -wait
 Write-Host "Please send this file to the requester: `"$Filename`""
 Write-Host "You can also run `"$env:PUBLIC\autoruns.exe`" to open the file and examine what was collected."
