@@ -54,7 +54,8 @@ done
 #Allow FIO to just be in the same folder as the script or the current folder when pulling from web
 export PATH=$PATH:$(pwd)
 
-if [[ -z "$(command -v fio)" ]] ; then
+FIOPATHNAME="$(command -v fio)"
+if [[ -z "${FIOPATHNAME}" ]] ; then
   echo "Installing fio from public repository..."
   repoenabled=false
   repoadded=false
@@ -98,7 +99,8 @@ if [[ -z "$(command -v fio)" ]] ; then
   popd
 fi
 
-if [[ -z "$(command -v fio)" ]] ; then
+FIOPATHNAME="$(command -v fio)"
+if [[ -z "${FIOPATHNAME}" ]] ; then
   echo "ERROR: fio is not available and installation attempt failed."
   exit 5
 fi
@@ -120,7 +122,7 @@ if [ ! -z "${blkdevlist[*]}" ]; then
     fi
     number_of_cores=$(nproc)
     echo "Initialing the EBS volume ${device_to_warm} ..."
-    command="$SUDO fio --filename=${device_to_warm} --rw=read --bs=128k --iodepth=32 --ioengine=libaio --direct=1 --name=volume-initialize"
+    command="$SUDO $FIOPATHNAME --filename=${device_to_warm} --rw=read --bs=128k --iodepth=32 --ioengine=libaio --direct=1 --name=volume-initialize"
     echo "running command: '$command'"
     $command
     echo "EBS volume ${device_to_warm} initialized !"
