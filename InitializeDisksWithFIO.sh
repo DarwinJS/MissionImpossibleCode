@@ -1,3 +1,7 @@
+
+
+
+
 #!/usr/bin/env bash
 set -o errexit
 set -eo pipefail
@@ -46,6 +50,9 @@ while getopts ":d:h" opt; do
       ;;
   esac
 done
+
+#Allow FIO to just be in the same folder as the script or the current folder when pulling from web
+export PATH=$PATH:$(pwd)
 
 if [[ -z "$(command -v fio)" ]] ; then
   echo "Installing fio from public repository..."
