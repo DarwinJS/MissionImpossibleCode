@@ -4,12 +4,7 @@
 
 # wget -O - https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/InitializeDisksWithFIO.sh | bash -s <arguments>
 
-#Features
-# - uses fio from current folder if it exists
-# - download fio if necessary
-# - skips non-existence devices
-# - takes device list (full path or just last path part) (use -d)
-# - if no device list, enumerates all local, writable, non-removable devices
+#See usage() function for features description
 
 set -o errexit
 set -eo pipefail
@@ -30,7 +25,7 @@ fi
 usage(){
   cat <<- EndOfHereDocument1
 
-	Usage: $0 [-d \"sda xda\"]
+  Usage: $0 [-d \"sda xda\"]
 
   When -d is not used, all local, writable, non-removable devices are initialized.
 
