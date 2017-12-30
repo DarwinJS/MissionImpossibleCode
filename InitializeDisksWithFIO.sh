@@ -1,8 +1,15 @@
-
-
 #!/usr/bin/env bash
+
+# bash <(wget -O - https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/InitializeDisksWithFIO.sh) <arguments>
+
+# wget -O - https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/InitializeDisksWithFIO.sh | bash -s <arguments>
+
+
 set -o errexit
 set -eo pipefail
+
+set -o nounset #detect uninitailized variables
+set -o xtrace  #print each line before executing
 
 # configure SUDO if we are not root
 SUDO=''
