@@ -1,7 +1,5 @@
 
 
-
-
 #!/usr/bin/env bash
 set -o errexit
 set -eo pipefail
@@ -52,10 +50,10 @@ while getopts ":d:h" opt; do
 done
 
 #Allow FIO to just be in the same folder as the script or the current folder when pulling from web
-export PATH=$PATH:$(pwd)
+[[ ":$PATH:" != *":$(pwd):"* ]] && PATH="${PATH}:$(pwd)"
 
 FIOPATHNAME="$(command -v fio)"
-if [[ -z "${FIOPATHNAME}" ]] ; then
+if [[ -z "$(command -v fio)" ]] ; then
   echo "Installing fio from public repository..."
   repoenabled=false
   repoadded=false
