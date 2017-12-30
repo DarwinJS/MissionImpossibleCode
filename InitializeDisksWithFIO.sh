@@ -4,6 +4,12 @@
 
 # wget -O - https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/InitializeDisksWithFIO.sh | bash -s <arguments>
 
+#Features
+# - uses fio from current folder if it exists
+# - download fio if necessary
+# - skips non-existence devices
+# - takes device list (full path or just last path part) (use -d)
+# - if no device list, enumerates all local, writable, non-removable devices
 
 set -o errexit
 set -eo pipefail
@@ -22,13 +28,27 @@ if [[ $EUID != 0 ]] ; then
 fi
 
 usage(){
-	echo "Usage: $0 [-d \"sda xda\"]"
-    echo "Examples:"
-    echo "  $0 # initialize local, writable disk devices"
-    echo "  $0 -d \"sda xda\" #initialize specified devices at /dev/"
-    echo "  $0 -d \"/dev/sda /dev/xda\" #initialize specified devices at full device path as specified"
-    echo "  $0 -d \"/dev/sda1\" #initialize specified partition at full device path as specified"
-    echo "When -d is not used, all local, writable devices are enumerated."
+  cat <<- EndOfHereDocument1
+
+	Usage: $0 [-d \"sda xda\"]
+
+  When -d is not used, all local, writable, non-removable devices are initialized.
+
+  Examples:
+    $0 # initialize local, writable, non-removable disk devices
+    $0 -d \"sda xda\" # initialize specified devices at /dev/
+    $0 -d \"/dev/sda /dev/xda\" # initialize specified devices at full device path as specified
+    $0 -d \"/dev/sda1\" # initialize specified partition at full device path as specified
+  
+  Features:
+    - uses fio from current folder if it exists
+    - uses fio from path if if it exists
+    - downloads/installs fio if not found
+    - skips non-existence devices
+    - takes device list (full path or just last path part) (use -d)
+    - if no device list, enumerates all local, writable, non-removable devices
+
+EndOfHereDocument1
 	exit 1
 }
 
