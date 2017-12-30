@@ -72,7 +72,8 @@ done
 [[ ":$PATH:" != *":$(pwd):"* ]] && PATH="${PATH}:$(pwd)"
 
 if [[ -z "$(command -v fio)" ]] ; then
-  echo "Installing fio from public repository..."
+  echo "fio not found on path, installing from public repository..."
+  echo "Place a copy of fio on the path or next to this script to avoid automatic installation."
   repoenabled=false
   repoadded=false
   pushd /tmp
