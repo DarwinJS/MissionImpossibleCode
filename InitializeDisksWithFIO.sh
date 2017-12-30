@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 # bash <(wget -O - https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/InitializeDisksWithFIO.sh) <arguments>
-
 # wget -O - https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/InitializeDisksWithFIO.sh | bash -s <arguments>
 
 #See usage() function for features description
@@ -155,3 +154,12 @@ if [[ ! -z "${blkdevlist[*]}" ]]; then
     fi
   done
 fi
+
+: <<'COMMENT'
+Tests:
+- test OSes: CentOS, Ubuntu, SuSE, Amazon Linux (original and v2)
+- run on clean system with no FIO => FIO installs automatically and starts fio
+- run on system where fio was automatically installed => skips to running fio with no install
+- copy fio from installed location to current folder ( cp $(command -v fio) .) and uninstall 
+  package and run script (should find colocated version and not auto install)
+COMMENT
