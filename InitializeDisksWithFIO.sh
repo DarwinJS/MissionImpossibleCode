@@ -108,26 +108,30 @@ else
   FIOPATHNAME="$(command -v fio)"
 fi
 
-if [ -z "${blkdevlist[*]}" ]; then
+if [[ -z "${blkdevlist[*]}" ]]; then
   echo "-d was not used to specify block device list, finding all local, writable block devices."
   blkdevlist="$(lsblk -d -n -oNAME,RO,RM | grep '0\s*0$' | awk {'print $1'})"
   echo "enumerated block devices: ${blkdevlist}"
 fi
 
-if [ ! -z "${blkdevlist[*]}" ]; then
+if [[ ! -z "${blkdevlist[*]}" ]]; then
   echo "Processing block devices: ${blkdevlist}"
   for device_name in ${blkdevlist}
   do
-    if [[ ${device_name} == /dev/* ]]; then
+    if [[ ${device_name} == /* ]]; then
       device_to_warm="${device_name}"
     else
       device_to_warm="/dev/${device_name}"
     fi
-    number_of_cores=$(nproc)
-    echo "Initialing the EBS volume ${device_to_warm} ..."
-    command="$SUDO $FIOPATHNAME --filename=${device_to_warm} --rw=read --bs=128k --iodepth=32 --ioengine=libaio --direct=1 --name=volume-initialize"
-    echo "running command: '$command'"
-    $command
-    echo "EBS volume ${device_to_warm} initialized !"
+    if [[ ! -e "${device_to_warm}" ]]; then
+      echo "specified device \"${device_to_warm}\" does not exist, skipping..."
+    else
+      number_of_cores=$(nproc)
+      echo "Initialing the EBS volume ${device_to_warm} ..."
+      command="$SUDO $FIOPATHNAME --filename=${device_to_warm} --rw=read --bs=128k --iodepth=32 --ioengine=libaio --direct=1 --name=volume-initialize"
+      echo "running command: '$command'"
+      $command
+      echo "EBS volume ${device_to_warm} initialized !"
+    fi
   done
 fi
