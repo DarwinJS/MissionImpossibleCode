@@ -78,8 +78,13 @@ if [[ -z "$(command -v fio)" ]] ; then
   repoenabled=false
   repoadded=false
   pushd /tmp
-  if [[ -n "$(command -v yum)" ]] ; then
+  if [[ -n "$(command -v zypper)" ]] ; then
+    packagemanager=zypper
+    echo "Found and using ${packagemanager} package manager."
+    $SUDO $packagemanager install -y fio
+  elif [[ -n "$(command -v yum)" ]] ; then
     packagemanager=yum
+    echo "Found and using ${packagemanager} package manager."
     if [[ -n "$(yum repolist disabled | grep 'epel/')" ]] ; then
       echo "epel repository not available, configuring (will be returned to original configuration after install)..."
       $SUDO yum-config-manager --enable epel
@@ -106,10 +111,8 @@ if [[ -z "$(command -v fio)" ]] ; then
     fi
   elif [[ -n "$(command -v apt-get)" ]] ; then
     packagemanager=apt-get
+    echo "Found and using ${packagemanager} package manager."
     $SUDO $packagemanager update
-    $SUDO $packagemanager install -y fio
-  elif [[ -n "$(command -v zypper)" ]] ; then
-    packagemanager=zypper
     $SUDO $packagemanager install -y fio
   else
     unset packagemanager
