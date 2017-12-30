@@ -74,6 +74,7 @@ done
 if [[ -z "$(command -v fio)" ]] ; then
   echo "ATTENTION: fio not found on path, installing from public repository..."
   echo "NOTE: Place a copy of fio on the path or next to this script to avoid automatic installation."
+  echo ""
   repoenabled=false
   repoadded=false
   pushd /tmp
@@ -106,10 +107,10 @@ if [[ -z "$(command -v fio)" ]] ; then
   elif [[ -n "$(command -v apt-get)" ]] ; then
     packagemanager=apt-get
     $SUDO $packagemanager update
-    $SUDO $packagemanager install fio -y
+    $SUDO $packagemanager install -y fio
   elif [[ -n "$(command -v zypper)" ]] ; then
     packagemanager=zypper
-    $SUDO $packagemanager install fio -y
+    $SUDO $packagemanager install -y fio
   else
     unset packagemanager
   fi
