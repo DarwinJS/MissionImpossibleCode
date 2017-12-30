@@ -8,9 +8,6 @@
 set -o errexit
 set -eo pipefail
 
-set -o nounset #detect uninitailized variables
-set -o xtrace  #print each line before executing
-
 # configure SUDO if we are not root
 SUDO=''
 if [[ $EUID != 0 ]] ; then
@@ -59,7 +56,6 @@ done
 #Allow FIO to just be in the same folder as the script or the current folder when pulling from web
 [[ ":$PATH:" != *":$(pwd):"* ]] && PATH="${PATH}:$(pwd)"
 
-FIOPATHNAME="$(command -v fio)"
 if [[ -z "$(command -v fio)" ]] ; then
   echo "Installing fio from public repository..."
   repoenabled=false
@@ -101,13 +97,15 @@ if [[ -z "$(command -v fio)" ]] ; then
   else
     unset packagemanager
   fi
+  if [[ -z "$(command -v fio)" ]] ; then
+    echo "ERROR: fio is not available and installation attempt failed."
+    exit 5
+  else
+    FIOPATHNAME="$(command -v fio)"
+  fi
   popd
-fi
-
-FIOPATHNAME="$(command -v fio)"
-if [[ -z "${FIOPATHNAME}" ]] ; then
-  echo "ERROR: fio is not available and installation attempt failed."
-  exit 5
+else
+  FIOPATHNAME="$(command -v fio)"
 fi
 
 if [ -z "${blkdevlist[*]}" ]; then
@@ -133,4 +131,3 @@ if [ ! -z "${blkdevlist[*]}" ]; then
     echo "EBS volume ${device_to_warm} initialized !"
   done
 fi
- 
