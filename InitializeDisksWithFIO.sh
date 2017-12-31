@@ -47,10 +47,11 @@ usage(){
   
   Features:
     - oneliner to download from web and run
-    - schedule for future time
+    - complete offline operation by copying script and installing fio on image
     - read multiple devices in parallel
     - supports processor throttling (nice)
-    - reboot resilience (through schedule)
+    - TODO schedule for future time
+    - TODO reboot resilience (through schedule)
     - uses fio from path or current if it exists
     - downloads/installs fio if not found
     - skips non-existence devices
