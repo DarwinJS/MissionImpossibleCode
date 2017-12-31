@@ -154,7 +154,7 @@ if [[ ! -z "${blkdevlist[*]}" ]]; then
     if [[ ! -e "${device_to_warm}" ]]; then
       echo "specified device \"${device_to_warm}\" does not exist, skipping..."
     else
-      if [[ ! -n "${nicelevel}"]]
+      if [[ ! -z "${nicelevel}" ]]; then
         command+=" --nice=${nicelevel}"
       fi
       command+=" --filename=${device_to_warm} --rw=read --bs=128k --iodepth=32 --ioengine=libaio --direct=1 --name=volume-initialize-$(basename ${device_to_warm})"
