@@ -73,18 +73,18 @@ EndOfHereDocument2
 fi
 }
 
-while getopts ":d:n:vh" opt; do
+while getopts ":d:n:vbh" opt; do
   case $opt in
     b)
-      echo "-b (bare) was used, Parameter: $OPTARG" >&2
+      echo "-b (bare) was used, adding bareoutput=true" >&2
       bareoutput=true
       ;;
     d)
-      echo "-d (devices) was used, Parameter: $OPTARG" >&2
+      echo "-d (devices) was used, adding blkdevlist=${OPTARG}" >&2
       blkdevlist=${OPTARG}
       ;;
     n)
-      echo "-n (nice) was used, Parameter: $OPTARG" >&2
+      echo "-n (nice) was used, adding nicelevel=${OPTARG}" >&2
       nicelevel=${OPTARG}
       ;;
     v)
