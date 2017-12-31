@@ -29,14 +29,19 @@ usage(){
   When -d is not used, all local, writable, non-removable devices are initialized.
 
   Examples:
-    $0 # initialize local, writable, non-removable disk devices
+    $0 # initialize all local, writable, non-removable disk devices
     $0 -d \"sda xda\" # initialize specified devices at /dev/
     $0 -d \"/dev/sda /dev/xda\" # initialize specified devices at full device path as specified
     $0 -d \"/dev/sda1\" # initialize specified partition at full device path as specified
+    $0 -n 5 # use specified nice cpu priority to initialize all local, writable, non-removable disk devices
   
   Features:
-    - uses fio from current folder if it exists
-    - uses fio from path if if it exists
+    - oneliner to download from web and run
+    - schedule for future time
+    - read multiple devices in parallel
+    - supports processor throttling (nice)
+    - reboot resilience (through schedule)
+    - uses fio from path or current if it exists
     - downloads/installs fio if not found
     - skips non-existence devices
     - takes device list (full path or just last path part) (use -d)
@@ -46,11 +51,15 @@ EndOfHereDocument1
 	exit 1
 }
 
-while getopts ":d:h" opt; do
+while getopts ":d:n:h" opt; do
   case $opt in
     d)
-      echo "-d was used, Parameter: $OPTARG" >&2
+      echo "-d (devices) was used, Parameter: $OPTARG" >&2
       blkdevlist=${OPTARG}
+      ;;
+    n)
+      echo "-n (nice) was used, Parameter: $OPTARG" >&2
+      nicelevel=${OPTARG}
       ;;
     h)
       usage
@@ -145,14 +154,17 @@ if [[ ! -z "${blkdevlist[*]}" ]]; then
     if [[ ! -e "${device_to_warm}" ]]; then
       echo "specified device \"${device_to_warm}\" does not exist, skipping..."
     else
-      number_of_cores=$(nproc)
-      echo "Initialing the EBS volume ${device_to_warm} ..."
-      command="$SUDO $FIOPATHNAME --filename=${device_to_warm} --rw=read --bs=128k --iodepth=32 --ioengine=libaio --direct=1 --name=volume-initialize"
-      echo "running command: '$command'"
-      $command
-      echo "EBS volume ${device_to_warm} initialized !"
+      if [[ ! -n "${nicelevel}"]]
+        command+=" --nice=${nicelevel}"
+      fi
+      command+=" --filename=${device_to_warm} --rw=read --bs=128k --iodepth=32 --ioengine=libaio --direct=1 --name=volume-initialize-$(basename ${device_to_warm})"
     fi
+  command="$SUDO $FIOPATHNAME ${command}"
   done
+  echo "Initialing the EBS volume(s) ${blkdevlist} ..."
+  echo "running command: '$command'"
+  $command
+  echo "EBS volume(s) ${blkdevlist} initialized !"
 fi
 
 : <<'COMMENT'
