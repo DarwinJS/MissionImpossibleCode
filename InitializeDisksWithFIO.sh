@@ -73,7 +73,7 @@ EndOfHereDocument2
 fi
 }
 
-while getopts ":d:n:vbh" opt; do
+while getopts ":bvhd:n:" opt; do
   case $opt in
     b)
       echo "-b (bare) was used, adding bareoutput=true" >&2
