@@ -8,6 +8,8 @@
 set -o errexit
 set -eo pipefail
 
+SCRIPT_VERSION=1.1.0
+
 # configure SUDO if we are not root
 SUDO=''
 if [[ $EUID != 0 ]] ; then
@@ -20,6 +22,10 @@ if [[ $EUID != 0 ]] ; then
     fi
   fi
 fi
+
+emitversion(){
+  echo "The version of ${0} is ${SCRIPT_VERSION}"
+}
 
 usage(){
   cat <<- EndOfHereDocument1
@@ -51,7 +57,7 @@ EndOfHereDocument1
 	exit 1
 }
 
-while getopts ":d:n:h" opt; do
+while getopts ":d:n:v:h" opt; do
   case $opt in
     d)
       echo "-d (devices) was used, Parameter: $OPTARG" >&2
@@ -60,6 +66,10 @@ while getopts ":d:n:h" opt; do
     n)
       echo "-n (nice) was used, Parameter: $OPTARG" >&2
       nicelevel=${OPTARG}
+      ;;
+    v)
+      emitversion
+      exit 0
       ;;
     h)
       usage
@@ -174,4 +184,9 @@ Tests:
 - run on system where fio was automatically installed => skips to running fio with no install
 - copy fio from installed location to current folder ( cp $(command -v fio) .) and uninstall 
   package and run script (should find colocated version and not auto install)
+
+Todos:
+- run using scheduler
+- reboot resilience
+- save output report from fio
 COMMENT
