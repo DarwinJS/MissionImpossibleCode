@@ -57,7 +57,7 @@ EndOfHereDocument1
 	exit 1
 }
 
-while getopts ":d:n:v:h" opt; do
+while getopts ":d:n:vh" opt; do
   case $opt in
     d)
       echo "-d (devices) was used, Parameter: $OPTARG" >&2
