@@ -34,6 +34,8 @@ emitversion(){
 usage(){
   cat <<- EndOfHereDocument1
 
+  Note: Script name in below will look unusual if using oneliner to download and run help.
+
   Usage: $0 [-d \"sda xda\"]
 
   When -d is not used, all local, writable, non-removable devices are initialized.
@@ -44,6 +46,9 @@ usage(){
     $0 -d \"/dev/sda /dev/xda\" # initialize specified devices at full device path as specified
     $0 -d \"/dev/sda1\" # initialize specified partition at full device path as specified
     $0 -n 5 # use specified nice cpu priority to initialize all local, writable, non-removable disk devices
+    $0 -b # bare - must be used as first argument - suppresses banner and extraneous output (including on emitversion)
+    $0 -v # emit script name and version
+    $0 -b -v # emit only script version (good for comparing whether local version is older than latest online version)
   
   Features:
     - oneliner to download from web and run
@@ -63,7 +68,7 @@ EndOfHereDocument1
 }
 
 displaybanner(){
-if [[ -z "$bareoutput" ]]; then
+if [[ -z "${bareoutput}" ]]; then
   cat <<- EndOfHereDocument2
 
   $0 (InitializeDisksWithFIO.sh) Version: ${SCRIPT_VERSION}
@@ -76,15 +81,14 @@ fi
 while getopts ":bvhd:n:" opt; do
   case $opt in
     b)
-      echo "-b (bare) was used, adding bareoutput=true" >&2
       bareoutput=true
       ;;
     d)
-      echo "-d (devices) was used, adding blkdevlist=${OPTARG}" >&2
+      [[ -z "${bareoutput}" ]] && echo "-d (devices) was used, adding blkdevlist=${OPTARG}" >&2
       blkdevlist=${OPTARG}
       ;;
     n)
-      echo "-n (nice) was used, adding nicelevel=${OPTARG}" >&2
+      [[ -z "${bareoutput}" ]] && echo "-n (nice) was used, adding nicelevel=${OPTARG}" >&2
       nicelevel=${OPTARG}
       ;;
     v)
@@ -96,7 +100,9 @@ while getopts ":bvhd:n:" opt; do
       exit 0
       ;;
     \?)
-      echo "Invalid option: -$OPTARG" >&2
+      echo "INVALID OPTION: -$OPTARG" >&2
+      echo ""
+      usage
       exit 1
       ;;
     :)
