@@ -155,16 +155,15 @@ if [[ ! -z "${blkdevlist[*]}" ]]; then
       echo "specified device \"${device_to_warm}\" does not exist, skipping..."
     else
       if [[ ! -z "${nicelevel}" ]]; then
-        nicecmd=" --nice=${nicelevel}"
+        nicecmd="--nice=${nicelevel}"
       fi
       #Customize this line if you wish to customize how FIO operates
       command+=" --filename=${device_to_warm} ${nicecmd} --rw=read --bs=128k --iodepth=32 --ioengine=libaio --direct=1 --name=volume-initialize-$(basename ${device_to_warm})"
     fi
-  command="$SUDO $FIOPATHNAME ${command}"
   done
   echo "Initialing the EBS volume(s) ${blkdevlist} ..."
   echo "running command: '$command'"
-  $command
+  $SUDO $FIOPATHNAME ${command}
   echo "EBS volume(s) ${blkdevlist} initialized !"
 fi
 
