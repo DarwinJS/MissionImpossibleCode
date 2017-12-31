@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-# bash <(wget -O - https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/InitializeDisksWithFIO.sh) <arguments>
-# wget -O - https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/InitializeDisksWithFIO.sh | bash -s <arguments>
+# bash <(wget --no-cache -O - https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/InitializeDisksWithFIO.sh) <arguments>
+# wget --no-cache -O - https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/InitializeDisksWithFIO.sh | bash -s <arguments>
 
 #See usage() function for features description
 
@@ -155,9 +155,10 @@ if [[ ! -z "${blkdevlist[*]}" ]]; then
       echo "specified device \"${device_to_warm}\" does not exist, skipping..."
     else
       if [[ ! -z "${nicelevel}" ]]; then
-        command+=" --nice=${nicelevel}"
+        nicecmd=" --nice=${nicelevel}"
       fi
-      command+=" --filename=${device_to_warm} --rw=read --bs=128k --iodepth=32 --ioengine=libaio --direct=1 --name=volume-initialize-$(basename ${device_to_warm})"
+      #Customize this line if you wish to customize how FIO operates
+      command+=" --filename=${device_to_warm} ${nicecmd} --rw=read --bs=128k --iodepth=32 --ioengine=libaio --direct=1 --name=volume-initialize-$(basename ${device_to_warm})"
     fi
   command="$SUDO $FIOPATHNAME ${command}"
   done
