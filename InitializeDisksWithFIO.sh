@@ -24,7 +24,11 @@ if [[ $EUID != 0 ]] ; then
 fi
 
 emitversion(){
-  echo "The version of ${0} is ${SCRIPT_VERSION}"
+  if [[ -z "$bareoutput" ]]; then
+    echo "The version of ${0} is ${SCRIPT_VERSION}"
+  else
+    echo "${SCRIPT_VERSION}"
+  fi
 }
 
 usage(){
@@ -52,13 +56,28 @@ usage(){
     - skips non-existence devices
     - takes device list (full path or just last path part) (use -d)
     - if no device list, enumerates all local, writable, non-removable devices
+    - emits version (can be used to update or warn when a local copy is older than the latest online version)
 
 EndOfHereDocument1
-	exit 1
+}
+
+displaybanner(){
+if [[ -z "$bareoutput" ]]; then
+  cat <<- EndOfHereDocument2
+
+  $0 (InitializeDisksWithFIO.sh) Version: ${SCRIPT_VERSION}
+  Updates and information: github link
+
+EndOfHereDocument2
+fi
 }
 
 while getopts ":d:n:vh" opt; do
   case $opt in
+    b)
+      echo "-b (bare) was used, Parameter: $OPTARG" >&2
+      bareoutput=true
+      ;;
     d)
       echo "-d (devices) was used, Parameter: $OPTARG" >&2
       blkdevlist=${OPTARG}
@@ -85,6 +104,9 @@ while getopts ":d:n:vh" opt; do
       ;;
   esac
 done
+
+
+displaybanner
 
 #Allow FIO to just be in the same folder as the script or the current folder when pulling from web
 [[ ":$PATH:" != *":$(pwd):"* ]] && PATH="${PATH}:$(pwd)"
