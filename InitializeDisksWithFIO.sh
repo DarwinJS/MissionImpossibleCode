@@ -45,18 +45,25 @@ usage(){
     $0 -d \"sda xda\" # initialize specified devices at /dev/
     $0 -d \"/dev/sda /dev/xda\" # initialize specified devices at full device path as specified
     $0 -d \"/dev/sda1\" # initialize specified partition at full device path as specified
-    $0 -n 5 # use specified nice cpu priority to initialize all local, writable, non-removable disk devices
+    $0 -n 5 # use specified nice cpu priority to initialize all local, writable, non-removable disk devices, range -20 to 19
     $0 -b # bare - must be used as first argument - suppresses banner and extraneous output (including on emitversion)
     $0 -v # emit script name and version
     $0 -b -v # emit only script version (good for comparing whether local version is older than latest online version)
-  
+    $0 -r 5 # schedule every 5 minutes (will not run if already running), range: 1-59
+    
+    RUN FROM GITHUB:
+    bash <(wget -O - https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/InitializeDisksWithFIO.sh) <arguments>
+
+    DOWNLOAD FROM GITHUB:
+    wget https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/InitializeDisksWithFIO.sh -O ./InitializeDisksWithFIO.sh
+
   Features:
     - oneliner to download from web and run
     - complete offline operation by copying script and installing fio on image
     - read multiple devices in parallel
     - supports processor throttling (nice)
-    - TODO schedule for future time
-    - TODO reboot resilience (through schedule)
+    - schedule for future time up to 60 minutes away
+    - reboot resilience (through schedule - job only self deletes after successful completion)
     - uses fio from path or current if it exists
     - downloads/installs fio if not found
     - skips non-existence devices
@@ -91,12 +98,22 @@ while getopts ":bvhdu:n:c:s:" opt; do
       blkdevlist=${OPTARG}
       ;;
     n)
-      [[ -z "${bareoutput}" ]] && echo "-n (nice) was used, adding nicelevel=${OPTARG}" >&2
-      nicelevel=${OPTARG}
+      if [[ "${OPTARG}" =~ ^-?[0-9]+$ && "${OPTARG}" -gt -20 && "${OPTARG}" -lt 19 ]]; then
+        [[ -z "${bareoutput}" ]] && echo "-n (nice) was used, adding nicelevel=${OPTARG}" >&2
+        nicelevel=${OPTARG}
+      else
+        echo "Error: parameter \"-n ${OPTARG}\" must be numeric AND in the range -20 to 19.  Use $0 -h for help."
+        exit 1
+      fi
       ;;
     r)
-      [[ -z "${bareoutput}" ]] && echo "-r (recurrenceminutes) was used, adding recurrenceminutes=${OPTARG}" >&2
-      nicelevel=${OPTARG}
+      if [[ "${OPTARG}" =~ ^[0-9]+$ && "${OPTARG}" -gt 1 && "${OPTARG}" -lt 59 ]]; then
+        [[ -z "${bareoutput}" ]] && echo "-r (recurrenceminutes) was used, adding recurrenceminutes=${OPTARG}" >&2
+        recurrenceminutes=${OPTARG}
+      else
+        echo "Error: parameter \"-r ${OPTARG}\" must be numeric AND in the range 1 to 59.  Use $0 -h for help."
+        exit 1
+      fi
       ;;
     v)
       emitversion
