@@ -78,17 +78,24 @@ EndOfHereDocument2
 fi
 }
 
-while getopts ":bvhd:n:" opt; do
+while getopts ":bvhdu:n:c:s:" opt; do
   case $opt in
     b)
       bareoutput=true
       ;;
+    c)
+      [[ -z "${bareoutput}" ]] && echo "-c (crontriggeredrun) was used, adding crontriggeredrun=true" >&2
+      unschedulewhendone=true
+      ;;
     d)
-      [[ -z "${bareoutput}" ]] && echo "-d (devices) was used, adding blkdevlist=${OPTARG}" >&2
       blkdevlist=${OPTARG}
       ;;
     n)
       [[ -z "${bareoutput}" ]] && echo "-n (nice) was used, adding nicelevel=${OPTARG}" >&2
+      nicelevel=${OPTARG}
+      ;;
+    r)
+      [[ -z "${bareoutput}" ]] && echo "-r (recurrenceminutes) was used, adding recurrenceminutes=${OPTARG}" >&2
       nicelevel=${OPTARG}
       ;;
     v)
@@ -112,6 +119,16 @@ while getopts ":bvhd:n:" opt; do
   esac
 done
 
+#Only one copy at a time (especially for scheduled runs)
+LOCKDIRNAME=/tmp/InitializeDisksWithFIO.lock
+if [[ -d "${LOCKDIRNAME}" ]]; then
+  echo "Lock folder \"${LOCKDIRNAME}\" exists, script already running, exiting..."
+  exit 0
+else
+  mkdir "${LOCKDIRNAME}"
+fi
+trap 'echo "Removing Lock" ; rm -rf "${LOCKDIRNAME}"; exit 1' 2 3 5 10 13 15 #remove lock on unexpected exit
+trap 'echo "Removing Lock" ; rm -rf "${LOCKDIRNAME}";' 0 # remove lock on successful exit
 
 displaybanner
 
@@ -200,11 +217,34 @@ if [[ ! -z "${blkdevlist[*]}" ]]; then
       command+=" --filename=${device_to_warm} ${nicecmd} --rw=read --bs=128k --iodepth=32 --ioengine=libaio --direct=1 --name=volume-initialize-$(basename ${device_to_warm})"
     fi
   done
-  echo "Initialing the EBS volume(s) ${blkdevlist} ..."
-  echo "running command: '$command'"
-  $SUDO $FIOPATHNAME ${command}
-  echo "EBS volume(s) ${blkdevlist} initialized !"
+  if [[ -z "${recurrenceminutes}" ]]; then
+    echo "Initialing the EBS volume(s) ${blkdevlist} ..."
+    echo "running command: '$command'"
+    $SUDO $FIOPATHNAME ${command}
+    echo "EBS volume(s) ${blkdevlist} initialized !"
+  else
+    echo "SCHEDULING: Initialing the EBS volume(s) ${blkdevlist} ..."
+    echo "SCHEDULING: command: '$command' for every ${recurrenceminutes} minutes until all initializations complete."
+    SCRIPTNAME=/etc/crontab/InitializeDisksWithFIO.sh
+    if [[ "$0" -ne "${SCRIPTNAME}" ]]; then
+      echo "Copying script to ${SCRIPTNAME}"
+      cp $0 ${SCRIPTNAME} -f
+    else
+      SCRIPTNAME="$0"
+    fi
+    if [[ -z "$($SUDO cat /etc/crontab | grep '${SCRIPTNAME}')" ]]; then
+      $SUDO sh -c 'echo "*/${recurrenceminutes} * * * * bash ${SCRIPTNAME} $@ -c" >> /etc/crontab' 
+    fi
+    exit 0
+  fi
 fi
+if [[ -n "${crontriggeredrun}" ]]; then
+  echo "Completed successfully, removing cron job"
+  if [[ ! -z "$($SUDO cat /etc/crontab | grep '$0')" ]]; then
+    $SUDO sh -c 'FILECONTENTS=`cat /etc/crontab` ; echo "${FILECONTENTS}" | grep -v "$0" > /etc/crontab'
+  fi
+fi
+
 
 : <<'COMMENT'
 Tests:
