@@ -34,10 +34,10 @@ usage(){
     $0 -b # bare - must be used as first argument - suppresses banner and extraneous output (including on emitversion)
     $0 -v # emit script name and version
     $0 -b -v # emit only script version (good for comparing whether local version is older than latest online version)
-    $0 -r 5 # schedule every 5 minutes (will not run if already running), range: 1-59
+    $0 -r 5 # schedule every 5 minutes (only a single instance ever runs), range: 1-59
     
     RUN FROM GITHUB:
-    bash <(wget -O - https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/InitializeDisksWithFIO.sh) <arguments>
+    wget --no-cache -O - https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/InitializeDisksWithFIO.sh | bash -s <arguments> <arguments>
     bash <(wget -O - https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/InitializeDisksWithFIO.sh) <arguments>
 
     DOWNLOAD FROM GITHUB:
@@ -51,8 +51,10 @@ usage(){
       other distros will probably work if you place the distro matched edition of fio next to this script
     - initialize multiple devices in parallel (default)
     - CPU throttling (nice)
-    - schedule for future time up to 59 minutes away (after automaiton runs)
-     - reboot resilience (through recurrant cron job - cron job only self deletes after successful completion)
+    - schedule recurrent cron job for (only a single instance ever runs):
+      - reboot resilience - cron job is recurrent each x minutes and self deletes after successful completion
+      - future run - up to 59 minutes away (e.g. allow other automation to complete) 
+      - parallel run - allow automation to continue (set -r 1) 
     - skips non-existence devices
     - takes device list (full path or just last path part) (use -d)
     - if no device list, enumerates all local, writable, non-removable devices
@@ -98,7 +100,7 @@ while getopts ":bvhd:n:c:s:r:" opt; do
       blkdevlist=${OPTARG}
       ;;
     n)
-      if [[ "${OPTARG}" =~ ^-?[0-9]+$ && "${OPTARG}" -gt -20 && "${OPTARG}" -lt 19 ]]; then
+      if [[ "${OPTARG}" =~ ^-?[0-9]+$ && "${OPTARG}" -ge -20 && "${OPTARG}" -le 19 ]]; then
         [[ -z "${bareoutput}" ]] && echo "-n (nice) was used, adding nicelevel=${OPTARG}" >&2
         nicelevel=${OPTARG}
       else
@@ -107,7 +109,7 @@ while getopts ":bvhd:n:c:s:r:" opt; do
       fi
       ;;
     r)
-      if [[ "${OPTARG}" =~ ^[0-9]+$ && "${OPTARG}" -gt 1 && "${OPTARG}" -lt 59 ]]; then
+      if [[ "${OPTARG}" =~ ^-?[0-9]+$ && "${OPTARG}" -ge 1 && "${OPTARG}" -le 59 ]]; then
         [[ -z "${bareoutput}" ]] && echo "-r (recurrenceminutes) was used, adding recurrenceminutes=${OPTARG}" >&2
         recurrenceminutes=${OPTARG}
       else
@@ -243,7 +245,7 @@ if [[ ! -z "${blkdevlist[*]}" ]]; then
     echo "SCHEDULING: Initialing the EBS volume(s) ${blkdevlist} ..."
     echo "SCHEDULING: command: '$command' for every ${recurrenceminutes} minutes until all initializations complete."
     SCRIPTNAME=/etc/crontab/InitializeDisksWithFIO.sh
-    if [[ "$0" -ne "${SCRIPTNAME}" ]]; then
+    if [[ "$0" != "${SCRIPTNAME}" ]]; then
       echo "Copying script to ${SCRIPTNAME}"
       cp $0 ${SCRIPTNAME} -f
     else
