@@ -245,9 +245,12 @@ if [[ ! -z "${blkdevlist[*]}" ]]; then
     echo "SCHEDULING: Initialing the EBS volume(s) ${blkdevlist} ..."
     echo "SCHEDULING: command: '$command' for every ${recurrenceminutes} minutes until all initializations complete."
     SCRIPTNAME=/etc/crontab/InitializeDisksWithFIO.sh
+    SCRIPTFOLDER=$(dirname ${SCRIPTNAME})
     if [[ "$0" != "${SCRIPTNAME}" ]]; then
-      echo "Copying script to ${SCRIPTNAME}"
-      $SUDO cp $0 ${SCRIPTNAME} -f
+      echo "Copying $0 to ${SCRIPTNAME}"
+      $SUDO cp "$0" "${SCRIPTFOLDER}" -f
+      $SUDO mv "${SCRIPTFOLDER}\$(basename $0)" "${SCRIPTNAME}"
+      $SUDO chmod 755 "${SCRIPTNAME}"
     else
       SCRIPTNAME="$0"
     fi
