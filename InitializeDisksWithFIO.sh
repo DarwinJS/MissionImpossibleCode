@@ -237,20 +237,20 @@ if [[ ! -z "${blkdevlist[*]}" ]]; then
     fi
   done
   if [[ -z "${recurrenceminutes}" ]]; then
-    echo "Initialing the EBS volume(s) ${blkdevlist} ..."
+    echo "Initializing the EBS volume(s) ${blkdevlist} ..."
     echo "running command: '$command'"
     $SUDO $FIOPATHNAME ${command}
     echo "EBS volume(s) ${blkdevlist} initialized !"
   else
-    echo "SCHEDULING: Initialing the EBS volume(s) ${blkdevlist} ..."
+    echo "SCHEDULING: Initializing the EBS volume(s) ${blkdevlist} ..."
     echo "SCHEDULING: command: '$command' for every ${recurrenceminutes} minutes until all initializations complete."
     SCRIPTNAME=/etc/crontab/InitializeDisksWithFIO.sh
     SCRIPTFOLDER=$(dirname ${SCRIPTNAME})
     if [[ "$0" != "${SCRIPTNAME}" ]]; then
       echo "Copying $0 to ${SCRIPTNAME}"
-      $SUDO cat $FD > "${SCRIPTFOLDER}"
+      cat $FD > /tmp
       #$SUDO cp "$0" "${SCRIPTFOLDER}" -f
-      #$SUDO mv "${SCRIPTFOLDER}\$(basename $0)" "${SCRIPTNAME}"
+      $SUDO mv "/tmp/$(basename $0)" "${SCRIPTNAME}"
       $SUDO chmod 755 "${SCRIPTNAME}"
     else
       SCRIPTNAME="$0"
