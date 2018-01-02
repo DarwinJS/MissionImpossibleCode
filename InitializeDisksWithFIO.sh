@@ -248,9 +248,9 @@ if [[ ! -z "${blkdevlist[*]}" ]]; then
     SCRIPTFOLDER=$(dirname ${SCRIPTNAME})
     if [[ "$0" != "${SCRIPTNAME}" ]]; then
       echo "Copying $0 to ${SCRIPTNAME}"
-      cat $FD > /tmp
+      cat $FD > /tmp/currentcode
       #$SUDO cp "$0" "${SCRIPTFOLDER}" -f
-      $SUDO mv "/tmp/$(basename $0)" "${SCRIPTNAME}"
+      $SUDO mv /tmp/currentcode "${SCRIPTNAME}"
       $SUDO chmod 755 "${SCRIPTNAME}"
     else
       SCRIPTNAME="$0"
