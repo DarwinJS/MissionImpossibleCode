@@ -85,7 +85,7 @@ if [[ $EUID != 0 ]] ; then
   fi
 fi
 
-while getopts ":bvhdu:n:c:s:" opt; do
+while getopts ":bvhd:n:c:s:r:" opt; do
   case $opt in
     b)
       bareoutput=true
