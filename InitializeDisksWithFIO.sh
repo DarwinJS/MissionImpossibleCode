@@ -247,7 +247,7 @@ if [[ ! -z "${blkdevlist[*]}" ]]; then
     SCRIPTNAME=/etc/crontab/InitializeDisksWithFIO.sh
     if [[ "$0" != "${SCRIPTNAME}" ]]; then
       echo "Copying script to ${SCRIPTNAME}"
-      cp $0 ${SCRIPTNAME} -f
+      $SUDO cp $0 ${SCRIPTNAME} -f
     else
       SCRIPTNAME="$0"
     fi
