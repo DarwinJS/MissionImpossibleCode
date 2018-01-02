@@ -1,27 +1,10 @@
 #!/usr/bin/env bash
-
-# bash <(wget --no-cache -O - https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/InitializeDisksWithFIO.sh) <arguments>
-# wget --no-cache -O - https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/InitializeDisksWithFIO.sh | bash -s <arguments>
-
-#See usage() function for features description
+#See usage() function below for help and features description
 
 set -o errexit
 set -eo pipefail
 
 SCRIPT_VERSION=1.1.0
-
-# configure SUDO if we are not root
-SUDO=''
-if [[ $EUID != 0 ]] ; then
-  SUDO='sudo'
-  if [[ "$SUDO" -ne "" ]]; then
-    $SUDO -v
-    if [ $? -ne 0 ]; then
-      echo "ERROR: You must either be root or be able to use sudo" >&2
-      exit 5
-    fi
-  fi
-fi
 
 emitversion(){
   if [[ -z "$bareoutput" ]]; then
@@ -35,6 +18,8 @@ usage(){
   cat <<- EndOfHereDocument1
 
   Note: Script name in below will look unusual if using oneliner to download and run help.
+
+  You must be root or able to SUDO (to list sizes of block devices)
 
   Usage: $0 [-d \"sda xda\"]
 
@@ -53,6 +38,7 @@ usage(){
     
     RUN FROM GITHUB:
     bash <(wget -O - https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/InitializeDisksWithFIO.sh) <arguments>
+    bash <(wget -O - https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/InitializeDisksWithFIO.sh) <arguments>
 
     DOWNLOAD FROM GITHUB:
     wget https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/InitializeDisksWithFIO.sh -O ./InitializeDisksWithFIO.sh
@@ -60,12 +46,13 @@ usage(){
   Features:
     - oneliner to download from web and run
     - complete offline operation by copying script and installing fio on image
-    - read multiple devices in parallel
-    - supports processor throttling (nice)
-    - schedule for future time up to 60 minutes away
-    - reboot resilience (through schedule - job only self deletes after successful completion)
-    - uses fio from path or current if it exists
-    - downloads/installs fio if not found
+    - defaults to use fio from path or current directory
+    - on the fly install of FIO (supports CentOS, RedHat, Ubuntu, Amazon Linux (1 & 2)), 
+      other distros will probably work if you place the distro matched edition of fio next to this script
+    - initialize multiple devices in parallel (default)
+    - CPU throttling (nice)
+    - schedule for future time up to 59 minutes away (after automaiton runs)
+     - reboot resilience (through recurrant cron job - cron job only self deletes after successful completion)
     - skips non-existence devices
     - takes device list (full path or just last path part) (use -d)
     - if no device list, enumerates all local, writable, non-removable devices
@@ -84,6 +71,19 @@ if [[ -z "${bareoutput}" ]]; then
 EndOfHereDocument2
 fi
 }
+
+# configure SUDO if we are not root
+SUDO=''
+if [[ $EUID != 0 ]] ; then
+  SUDO='sudo'
+  if [[ "$SUDO" -ne "" ]]; then
+    $SUDO -v
+    if [ $? -ne 0 ]; then
+      echo "ERROR: You must either be root or be able to use sudo" >&2
+      exit 5
+    fi
+  fi
+fi
 
 while getopts ":bvhdu:n:c:s:" opt; do
   case $opt in
@@ -272,7 +272,5 @@ Tests:
   package and run script (should find colocated version and not auto install)
 
 Todos:
-- run using scheduler
-- reboot resilience
 - save output report from fio
 COMMENT
