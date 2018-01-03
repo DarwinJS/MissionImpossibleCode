@@ -60,6 +60,14 @@ usage(){
     - if no device list, enumerates all local, writable, non-removable devices
     - emits version (can be used to update or warn when a local copy is older than the latest online version)
 
+  Notes on Scheduling
+    - If you run the script directly from a URL and schedule it, the original script code must be downloaded to set it up in cron - 
+      the download is always attempted from the original SOURCE url even if you have rehosted this script.
+    - If you wish to avoid the behavior of downloading to schedule, then download a full copy of the script before running the schedule command,
+      this approach also handles a custom hosted location:
+      wget https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/InitializeDisksWithFIO.sh -O /tmp/InitializeDisksWithFIO.sh
+      bash /tmp/InitializeDisksWithFIO.sh -r 5
+
 EndOfHereDocument1
 }
 
@@ -251,7 +259,7 @@ if [[ ! -z "${blkdevlist[*]}" ]]; then
     if [[ "$0" =~ ^.*\/fd\/.*$ ]]; then
       echo "SCHEDULEING: Script is running from a pipe, must download a copy to schedule it"
       wget ${SCRIPTNETLOCATION} -O /tmp/currentversion
-      $SUDO mv /tmp/currentversion "${SCRIPTNAME}"
+      $SUDO mv /tmp/currentversion "${SCRIPTFOLDER}"
     else
       $SUDO mv $0 "${SCRIPTNAME}"
     fi
