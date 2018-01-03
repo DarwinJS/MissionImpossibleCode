@@ -248,7 +248,7 @@ if [[ ! -z "${blkdevlist[*]}" ]]; then
     echo "SCHEDULING: command: '$command' for every ${recurrenceminutes} minutes until all initializations complete."
     SCRIPTNAME=/etc/crontab/InitializeDisksWithFIO.sh
     SCRIPTFOLDER=$(dirname ${SCRIPTNAME})
-    if [[ "$0" != =~ ^.*\/fd\/.*$ ]]; then
+    if [[ "$0" =~ ^.*\/fd\/.*$ ]]; then
       echo "SCHEDULEING: Script is running from a pipe, must download a copy to schedule it"
       wget ${SCRIPTNETLOCATION} -O /tmp/currentversion
       $SUDO mv /tmp/currentcode "${SCRIPTNAME}"
@@ -277,6 +277,7 @@ Tests:
 - run on system where fio was automatically installed => skips to running fio with no install
 - copy fio from installed location to current folder ( cp $(command -v fio) .) and uninstall 
   package and run script (should find colocated version and not auto install)
+- run from web with schedule parameter
 
 Todos:
 - save output report from fio
