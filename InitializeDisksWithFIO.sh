@@ -251,7 +251,7 @@ if [[ ! -z "${blkdevlist[*]}" ]]; then
     if [[ "$0" =~ ^.*\/fd\/.*$ ]]; then
       echo "SCHEDULEING: Script is running from a pipe, must download a copy to schedule it"
       wget ${SCRIPTNETLOCATION} -O /tmp/currentversion
-      $SUDO mv /tmp/currentcode "${SCRIPTNAME}"
+      $SUDO mv /tmp/currentversion "${SCRIPTNAME}"
     else
       $SUDO mv $0 "${SCRIPTNAME}"
     fi
