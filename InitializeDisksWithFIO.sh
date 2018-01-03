@@ -256,13 +256,12 @@ if [[ ! -z "${blkdevlist[*]}" ]]; then
     echo "SCHEDULING: Initializing the EBS volume(s) ${blkdevlist} ..."
     echo "SCHEDULING: command: '$command' for every ${recurrenceminutes} minutes until all initializations complete."
     SCRIPTNAME=/etc/cron.d/InitializeDisksWithFIO.sh
-    cat $0 > /tmp/test.sh
     SCRIPTFOLDER=$(dirname ${SCRIPTNAME})
     if [[ "$0" =~ ^.*\/fd\/.*$ ]]; then
       echo "SCHEDULEING: Script is running from a pipe, must download a copy to schedule it"
       echo "SCHEDULEING: downloading ${SCRIPTNETLOCATION}"
-      wget ${SCRIPTNETLOCATION} -O /tmp/currentversion
-      $SUDO mv /tmp/currentversion "${SCRIPTFOLDER}"
+      wget ${SCRIPTNETLOCATION} -O /tmp/InitializeDisksWithFIO.sh
+      $SUDO mv /tmp/InitializeDisksWithFIO.sh "${SCRIPTFOLDER}"
     else
       $SUDO mv $0 "${SCRIPTNAME}"
     fi
