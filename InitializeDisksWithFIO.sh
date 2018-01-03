@@ -63,6 +63,8 @@ usage(){
 EndOfHereDocument1
 }
 
+SCRIPTNETLOCATION=https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/InitializeDisksWithFIO.sh
+
 displaybanner(){
 if [[ -z "${bareoutput}" ]]; then
   cat <<- EndOfHereDocument2
@@ -246,15 +248,14 @@ if [[ ! -z "${blkdevlist[*]}" ]]; then
     echo "SCHEDULING: command: '$command' for every ${recurrenceminutes} minutes until all initializations complete."
     SCRIPTNAME=/etc/crontab/InitializeDisksWithFIO.sh
     SCRIPTFOLDER=$(dirname ${SCRIPTNAME})
-    if [[ "$0" != "${SCRIPTNAME}" ]]; then
-      echo "Copying $0 to ${SCRIPTNAME}"
-      cat $FD > /tmp/currentcode
-      #$SUDO cp "$0" "${SCRIPTFOLDER}" -f
+    if [[ "$0" != =~ ^.*\/fd\/.*$ ]]; then
+      echo "SCHEDULEING: Script is running from a pipe, must download a copy to schedule it"
+      wget ${SCRIPTNETLOCATION} -O /tmp/currentversion
       $SUDO mv /tmp/currentcode "${SCRIPTNAME}"
-      $SUDO chmod 755 "${SCRIPTNAME}"
     else
-      SCRIPTNAME="$0"
+      $SUDO mv $0 "${SCRIPTNAME}"
     fi
+    $SUDO chmod 755 "${SCRIPTNAME}"
     if [[ -z "$($SUDO cat /etc/crontab | grep '${SCRIPTNAME}')" ]]; then
       $SUDO sh -c 'echo "*/${recurrenceminutes} * * * * bash ${SCRIPTNAME} $@ -c" >> /etc/crontab' 
     fi
