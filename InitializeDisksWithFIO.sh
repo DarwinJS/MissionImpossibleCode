@@ -37,7 +37,6 @@ usage(){
     $0 -r 5 # schedule every 5 minutes (only a single instance ever runs), range: 1-59
     
     RUN FROM GITHUB:
-    wget --no-cache -O - https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/InitializeDisksWithFIO.sh | bash -s <arguments> <arguments>
     bash <(wget -O - https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/InitializeDisksWithFIO.sh) <arguments>
 
     DOWNLOAD FROM GITHUB:
@@ -97,7 +96,7 @@ if [[ $EUID != 0 ]] ; then
   fi
 fi
 
-while getopts ":bvhd:n:c:s:r:" opt; do
+while getopts ":cbvhd:n:s:r:" opt; do
   case $opt in
     b)
       bareoutput=true
@@ -269,8 +268,9 @@ if [[ ! -z "${blkdevlist[*]}" ]]; then
     $SUDO chown root:root "${SCRIPTNAME}"
     $SUDO chmod 644 "${SCRIPTNAME}"
     if [[ -z "$($SUDO cat /etc/crontab | grep ${SCRIPTBASENAME})" ]]; then
-      #$SUDO 'echo "*/${recurrenceminutes} * * * * bash ${SCRIPTNAME} $@ -c" >> /etc/crontab' 
-      echo "*/${recurrenceminutes} * * * * bash ${SCRIPTNAME} $@ -c" | $SUDO tee -a /etc/crontab > /dev/null
+      #$SUDO 'echo "*/${recurrenceminutes} * * * * bash ${SCRIPTNAME} $@ -c" >> /etc/crontab'
+      STRIPEDRPARAM= echo "$@" | sed -r 's/-r [0-9]+ //g'
+      echo "*/${recurrenceminutes} * * * * bash ${SCRIPTNAME} ${STRIPEDRPARAM} -c" | $SUDO tee -a /etc/crontab > /dev/null
       $SUDO chown root:root /etc/crontab
       $SUDO chmod 644 /etc/crontab
     fi
