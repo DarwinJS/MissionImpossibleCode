@@ -272,6 +272,7 @@ if [[ ! -z "${blkdevlist[*]}" ]]; then
       #$SUDO 'echo "*/${recurrenceminutes} * * * * bash ${SCRIPTNAME} $@ -c" >> /etc/crontab' 
       echo "*/${recurrenceminutes} * * * * bash ${SCRIPTNAME} $@ -c" | $SUDO tee -a /etc/crontab > /dev/null
       $SUDO chown root:root /etc/crontab
+      $SUDO chmod 644 /etc/crontab
     fi
     exit 0
   fi
@@ -281,6 +282,7 @@ if [[ -n "${crontriggeredrun}" ]]; then
   if [[ ! -z "$($SUDO cat /etc/crontab | grep $0)" ]]; then
     $SUDO FILECONTENTS=`cat /etc/crontab` ; echo "${FILECONTENTS}" | grep -v "$0"  | $SUDO tee -a /etc/crontab > /dev/null
     $SUDO chown root:root /etc/crontab
+    $SUDO chmod 644 /etc/crontab
   fi
 fi
 
