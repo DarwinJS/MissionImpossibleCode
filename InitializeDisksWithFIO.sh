@@ -271,6 +271,7 @@ if [[ ! -z "${blkdevlist[*]}" ]]; then
     if [[ -z "$($SUDO cat /etc/crontab | grep ${SCRIPTBASENAME})" ]]; then
       #$SUDO 'echo "*/${recurrenceminutes} * * * * bash ${SCRIPTNAME} $@ -c" >> /etc/crontab' 
       echo "*/${recurrenceminutes} * * * * bash ${SCRIPTNAME} $@ -c" | $SUDO tee -a /etc/crontab > /dev/null
+      $SUDO chown root:root /etc/crontab
     fi
     exit 0
   fi
@@ -279,6 +280,7 @@ if [[ -n "${crontriggeredrun}" ]]; then
   echo "Completed successfully, removing cron job"
   if [[ ! -z "$($SUDO cat /etc/crontab | grep $0)" ]]; then
     $SUDO FILECONTENTS=`cat /etc/crontab` ; echo "${FILECONTENTS}" | grep -v "$0"  | $SUDO tee -a /etc/crontab > /dev/null
+    $SUDO chown root:root /etc/crontab
   fi
 fi
 
