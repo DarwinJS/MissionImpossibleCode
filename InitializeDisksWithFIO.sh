@@ -265,7 +265,8 @@ if [[ ! -z "${blkdevlist[*]}" ]]; then
     else
       $SUDO mv $0 "${SCRIPTNAME}"
     fi
-    $SUDO chmod 755 "${SCRIPTNAME}"
+    $SUDO chown root:root "${SCRIPTNAME}"
+    $SUDO chmod 644 "${SCRIPTNAME}"
     if [[ -z "$($SUDO cat /etc/crontab | grep '${SCRIPTNAME}')" ]]; then
       #$SUDO 'echo "*/${recurrenceminutes} * * * * bash ${SCRIPTNAME} $@ -c" >> /etc/crontab' 
       echo "*/${recurrenceminutes} * * * * bash ${SCRIPTNAME} $@ -c" | $SUDO tee -a /etc/crontab > /dev/null
