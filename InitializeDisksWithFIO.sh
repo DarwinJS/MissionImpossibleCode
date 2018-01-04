@@ -83,6 +83,14 @@ EndOfHereDocument2
 fi
 }
 
+removecronjob(){
+if [[ ! -z "$($SUDO cat /etc/crontab | grep $0)" ]]; then
+  $SUDO FILECONTENTS=`cat /etc/crontab` ; echo "${FILECONTENTS}" | grep -v "$0"  | $SUDO tee -a /etc/crontab > /dev/null
+  $SUDO chown root:root /etc/crontab
+  $SUDO chmod 644 /etc/crontab
+fi
+}
+
 # configure SUDO if we are not root
 SUDO=''
 if [[ $EUID != 0 ]] ; then
@@ -96,7 +104,7 @@ if [[ $EUID != 0 ]] ; then
   fi
 fi
 
-while getopts ":cbvhd:n:s:r:" opt; do
+while getopts ":cbvhud:n:s:r:" opt; do
   case $opt in
     b)
       bareoutput=true
@@ -125,6 +133,10 @@ while getopts ":cbvhd:n:s:r:" opt; do
         echo "Error: parameter \"-r ${OPTARG}\" must be numeric AND in the range 1 to 59.  Use $0 -h for help."
         exit 1
       fi
+      ;;
+    u)
+      [[ -z "${bareoutput}" ]] && echo "removing cron job if it exists" >&2
+      removecronjob
       ;;
     v)
       emitversion
@@ -279,11 +291,7 @@ if [[ ! -z "${blkdevlist[*]}" ]]; then
 fi
 if [[ -n "${crontriggeredrun}" ]]; then
   echo "Completed successfully, removing cron job"
-  if [[ ! -z "$($SUDO cat /etc/crontab | grep $0)" ]]; then
-    $SUDO FILECONTENTS=`cat /etc/crontab` ; echo "${FILECONTENTS}" | grep -v "$0"  | $SUDO tee -a /etc/crontab > /dev/null
-    $SUDO chown root:root /etc/crontab
-    $SUDO chmod 644 /etc/crontab
-  fi
+  removecronjob
 fi
 
 
