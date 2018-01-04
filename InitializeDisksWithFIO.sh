@@ -257,6 +257,7 @@ if [[ ! -z "${blkdevlist[*]}" ]]; then
     echo "SCHEDULING: command: '$command' for every ${recurrenceminutes} minutes until all initializations complete."
     SCRIPTNAME=/etc/cron.d/InitializeDisksWithFIO.sh
     SCRIPTFOLDER=$(dirname ${SCRIPTNAME})
+    SCRIPTBASENAME=$(basename ${SCRIPTNAME})
     if [[ "$0" =~ ^.*\/fd\/.*$ ]]; then
       echo "SCHEDULEING: Script is running from a pipe, must download a copy to schedule it"
       echo "SCHEDULEING: downloading ${SCRIPTNETLOCATION}"
@@ -267,7 +268,7 @@ if [[ ! -z "${blkdevlist[*]}" ]]; then
     fi
     $SUDO chown root:root "${SCRIPTNAME}"
     $SUDO chmod 644 "${SCRIPTNAME}"
-    if [[ -z "$($SUDO cat /etc/crontab | grep '${SCRIPTNAME}')" ]]; then
+    if [[ -z "$($SUDO cat /etc/crontab | grep ${SCRIPTBASENAME})" ]]; then
       #$SUDO 'echo "*/${recurrenceminutes} * * * * bash ${SCRIPTNAME} $@ -c" >> /etc/crontab' 
       echo "*/${recurrenceminutes} * * * * bash ${SCRIPTNAME} $@ -c" | $SUDO tee -a /etc/crontab > /dev/null
     fi
@@ -276,7 +277,7 @@ if [[ ! -z "${blkdevlist[*]}" ]]; then
 fi
 if [[ -n "${crontriggeredrun}" ]]; then
   echo "Completed successfully, removing cron job"
-  if [[ ! -z "$($SUDO cat /etc/crontab | grep '$0')" ]]; then
+  if [[ ! -z "$($SUDO cat /etc/crontab | grep $0)" ]]; then
     $SUDO FILECONTENTS=`cat /etc/crontab` ; echo "${FILECONTENTS}" | grep -v "$0"  | $SUDO tee -a /etc/crontab > /dev/null
   fi
 fi
