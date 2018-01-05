@@ -53,10 +53,10 @@ usage(){
     - emits version (can be used to update or warn when a local copy is older than the latest online version)
 
   Notes on Scheduling
-    - If you run the script directly from a URL and schedule it, the original script code must be downloaded to set it up in cron - 
-      the download is always attempted from the original SOURCE url even if you have rehosted this script.
-    - If you wish to avoid the behavior of downloading to schedule, then download a full copy of the script before running the schedule command,
-      this approach also handles a custom hosted location:
+    - If you run the script directly from a URL to schedule it, the original script code must be re-downloaded 
+      to set it up in cron - the download is always attempted from the original SOURCE url even if you have rehosted this script.
+    - If you wish to avoid the behavior of downloading to schedule, then download a full copy of the script 
+      before running the schedule command, this approach also handles a custom hosted location:
       wget https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/InitializeDisksWithFIO.sh -O /tmp/InitializeDisksWithFIO.sh
       bash /tmp/InitializeDisksWithFIO.sh -r 5
 
@@ -81,7 +81,6 @@ if [[ -z "${bareoutput}" ]]; then
 EndOfHereDocument2
 fi
 }
-
 
 displaybanner
 
@@ -163,16 +162,11 @@ while getopts ":cbvhud:n:s:r:" opt; do
   esac
 done
 
-#Only one copy at a time (especially for scheduled runs)
-LOCKDIRNAME=/tmp/InitializeDisksWithFIO.lock
-if [[ -d "${LOCKDIRNAME}" ]]; then
-  echo "Lock folder \"${LOCKDIRNAME}\" exists, script already running, exiting..."
+if [[ -n '/var/tmp/initializediskswithfio.done' ]]; then
+  echo "Presence of /var/tmp/initializediskswithfio.done indicates FIO has completed it's run on this system."
+  echo "Remove this file to run again."
   exit 0
-else
-  mkdir "${LOCKDIRNAME}"
 fi
-trap 'echo "Removing Lock" ; rm -rf "${LOCKDIRNAME}"; exit 1' 2 3 5 10 13 15 #remove lock on unexpected exit
-trap 'echo "Removing Lock" ; rm -rf "${LOCKDIRNAME}";' 0 # remove lock on successful exit
 
 #Allow FIO to just be in the same folder as the script or the current folder when pulling from web
 [[ ":$PATH:" != *":$(pwd):"* ]] && PATH="${PATH}:$(pwd)"
@@ -260,11 +254,14 @@ if [[ ! -z "${blkdevlist[*]}" ]]; then
     fi
   done
   if [[ -z "${recurrenceminutes}" ]]; then
+    ( #Only one copy can be actually doing a fio run
+    flock -n 9 || exit 0
     echo "Initializing the EBS volume(s) ${blkdevlist} ..."
     echo "running command: '$command'"
     $SUDO $FIOPATHNAME ${command}
     echo "EBS volume(s) ${blkdevlist} initialized !"
-    echo $(date) > /var/tmp/initialdiskswithfio.done
+    echo $(date) > /var/tmp/initializediskswithfio.done
+    ) 9>/var/lock/initializediskswithfio.lock
   else
     echo "SCHEDULING: Initializing the EBS volume(s) ${blkdevlist} ..."
     echo "SCHEDULING: command: '$command' for every ${recurrenceminutes} minutes until all initializations complete."
