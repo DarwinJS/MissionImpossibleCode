@@ -90,7 +90,7 @@ if [[ ! -z "$($SUDO cat /etc/crontab | grep '/etc/cron.d/InitializeDisksWithFIO.
   FILECONTENTS=`cat /etc/crontab` ; echo "${FILECONTENTS}" | grep -v '/etc/cron.d/InitializeDisksWithFIO.sh'  | $SUDO tee -a /etc/crontab > /dev/null
   $SUDO chown root:root /etc/crontab
   $SUDO chmod 644 /etc/crontab
-  rm /etc/cron.d/InitializeDisksWithFIO.sh -f
+  $SUDO rm /etc/cron.d/InitializeDisksWithFIO.sh -f
 fi
 }
 
