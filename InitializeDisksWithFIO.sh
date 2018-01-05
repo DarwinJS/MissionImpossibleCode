@@ -253,7 +253,8 @@ if [[ ! -z "${blkdevlist[*]}" ]]; then
       echo "Remove this file to run again."
       removecronjob
       exit 0
-    fi    ( #Only one copy can be actually doing a fio run
+    fi    
+    ( #Only one copy can be actually doing a fio run
     flock -n 9 || exit 0
     echo "Initializing the EBS volume(s) ${blkdevlist} ..."
     echo "running command: '$command'"
