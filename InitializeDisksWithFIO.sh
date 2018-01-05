@@ -4,15 +4,8 @@
 set -o errexit
 set -eo pipefail
 
-SCRIPT_VERSION=1.1.0
-
-emitversion(){
-  if [[ -z "$bareoutput" ]]; then
-    echo "The version of ${0} is ${SCRIPT_VERSION}"
-  else
-    echo "${SCRIPT_VERSION}"
-  fi
-}
+SCRIPT_VERSION=1.1.1
+SCRIPTNETLOCATION=https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/InitializeDisksWithFIO.sh
 
 usage(){
   cat <<- EndOfHereDocument1
@@ -70,7 +63,13 @@ usage(){
 EndOfHereDocument1
 }
 
-SCRIPTNETLOCATION=https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/InitializeDisksWithFIO.sh
+emitversion(){
+  if [[ -z "$bareoutput" ]]; then
+    echo "The version of ${0} is ${SCRIPT_VERSION}"
+  else
+    echo "${SCRIPT_VERSION}"
+  fi
+}
 
 displaybanner(){
 if [[ -z "${bareoutput}" ]]; then
@@ -82,6 +81,9 @@ if [[ -z "${bareoutput}" ]]; then
 EndOfHereDocument2
 fi
 }
+
+
+displaybanner
 
 removecronjob(){
 if [[ ! -z "$($SUDO cat /etc/crontab | grep '/etc/cron.d/InitializeDisksWithFIO.sh')" ]]; then
@@ -170,8 +172,6 @@ else
 fi
 trap 'echo "Removing Lock" ; rm -rf "${LOCKDIRNAME}"; exit 1' 2 3 5 10 13 15 #remove lock on unexpected exit
 trap 'echo "Removing Lock" ; rm -rf "${LOCKDIRNAME}";' 0 # remove lock on successful exit
-
-displaybanner
 
 #Allow FIO to just be in the same folder as the script or the current folder when pulling from web
 [[ ":$PATH:" != *":$(pwd):"* ]] && PATH="${PATH}:$(pwd)"
