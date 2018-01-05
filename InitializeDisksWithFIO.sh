@@ -248,7 +248,7 @@ if [[ ! -z "${blkdevlist[*]}" ]]; then
     fi
   done
   if [[ -z "${recurrenceminutes}" ]]; then
-    if [[ -n '/var/tmp/initializediskswithfio.done' ]]; then
+    if [[ -e '/var/tmp/initializediskswithfio.done' ]]; then
       echo "WARNING: Presence of /var/tmp/initializediskswithfio.done indicates FIO has completed it's run on this system, doing nothing."
       echo "Remove this file to run again."
       removecronjob
