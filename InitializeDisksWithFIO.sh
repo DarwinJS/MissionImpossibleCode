@@ -87,7 +87,7 @@ displaybanner
 removecronjob(){
 if [[ ! -z "$($SUDO cat /etc/crontab | grep '/etc/cron.d/InitializeDisksWithFIO.sh')" ]]; then
   echo "Removing cron job and script file /etc/cron.d/InitializeDisksWithFIO.sh"
-  FILECONTENTS=`cat /etc/crontab` ; echo "${FILECONTENTS}" | grep -v '/etc/cron.d/InitializeDisksWithFIO.sh'  | $SUDO tee -a /etc/crontab > /dev/null
+  FILECONTENTS=`cat /etc/crontab` ; echo "${FILECONTENTS}" | grep -v '/etc/cron.d/InitializeDisksWithFIO.sh'  | $SUDO tee /etc/crontab > /dev/null
   $SUDO chown root:root /etc/crontab
   $SUDO chmod 644 /etc/crontab
   $SUDO rm /etc/cron.d/InitializeDisksWithFIO.sh -f
@@ -279,7 +279,6 @@ if [[ ! -z "${blkdevlist[*]}" ]]; then
     $SUDO chown root:root "${SCRIPTNAME}"
     $SUDO chmod 644 "${SCRIPTNAME}"
     if [[ -z "$($SUDO cat /etc/crontab | grep ${SCRIPTBASENAME})" ]]; then
-      #$SUDO 'echo "*/${recurrenceminutes} * * * * bash ${SCRIPTNAME} $@ -c" >> /etc/crontab'
       STRIPEDRPARAM= echo "$@" | sed -r 's/-r [0-9]+ //g' | sed -r 's/-c //g'
       echo "*/${recurrenceminutes} * * * * root bash ${SCRIPTNAME} ${STRIPEDRPARAM} -c" | $SUDO tee -a /etc/crontab > /dev/null
       $SUDO chown root:root /etc/crontab
