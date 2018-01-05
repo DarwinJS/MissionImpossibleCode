@@ -163,7 +163,7 @@ while getopts ":cbvhud:n:s:r:" opt; do
 done
 
 if [[ -n '/var/tmp/initializediskswithfio.done' ]]; then
-  echo "Presence of /var/tmp/initializediskswithfio.done indicates FIO has completed it's run on this system."
+  echo "WARNING: Presence of /var/tmp/initializediskswithfio.done indicates FIO has completed it's run on this system, doing nothing."
   echo "Remove this file to run again."
   exit 0
 fi
