@@ -162,12 +162,6 @@ while getopts ":cbvhud:n:s:r:" opt; do
   esac
 done
 
-if [[ -n '/var/tmp/initializediskswithfio.done' ]]; then
-  echo "WARNING: Presence of /var/tmp/initializediskswithfio.done indicates FIO has completed it's run on this system, doing nothing."
-  echo "Remove this file to run again."
-  exit 0
-fi
-
 #Allow FIO to just be in the same folder as the script or the current folder when pulling from web
 [[ ":$PATH:" != *":$(pwd):"* ]] && PATH="${PATH}:$(pwd)"
 
@@ -254,7 +248,12 @@ if [[ ! -z "${blkdevlist[*]}" ]]; then
     fi
   done
   if [[ -z "${recurrenceminutes}" ]]; then
-    ( #Only one copy can be actually doing a fio run
+    if [[ -n '/var/tmp/initializediskswithfio.done' ]]; then
+      echo "WARNING: Presence of /var/tmp/initializediskswithfio.done indicates FIO has completed it's run on this system, doing nothing."
+      echo "Remove this file to run again."
+      removecronjob
+      exit 0
+    fi    ( #Only one copy can be actually doing a fio run
     flock -n 9 || exit 0
     echo "Initializing the EBS volume(s) ${blkdevlist} ..."
     echo "running command: '$command'"
