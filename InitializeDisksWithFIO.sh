@@ -84,10 +84,11 @@ fi
 }
 
 removecronjob(){
-if [[ ! -z "$($SUDO cat /etc/crontab | grep $0)" ]]; then
+if [[ ! -z "$($SUDO cat /etc/crontab | grep '/etc/cron.d/InitializeDisksWithFIO.sh')" ]]; then
   $SUDO FILECONTENTS=`cat /etc/crontab` ; echo "${FILECONTENTS}" | grep -v "$0"  | $SUDO tee -a /etc/crontab > /dev/null
   $SUDO chown root:root /etc/crontab
   $SUDO chmod 644 /etc/crontab
+  rm /etc/cron.d/InitializeDisksWithFIO.sh -f
 fi
 }
 
