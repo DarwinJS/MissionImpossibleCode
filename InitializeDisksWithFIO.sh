@@ -4,8 +4,9 @@
 set -o errexit
 set -eo pipefail
 
-SCRIPT_VERSION=1.2.1
+SCRIPT_VERSION=1.3.0
 SCRIPTNETLOCATION=https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/InitializeDisksWithFIO.sh
+REPORTANDDONEMARKERFILE=/var/tmp/initializedisksreportinthisfile.done
 
 usage(){
   cat <<- EndOfHereDocument1
@@ -250,11 +251,11 @@ if [[ ! -z "${blkdevlist[*]}" ]]; then
         nicecmd="--nice=${nicelevel}"
       fi
       #Customize this line if you wish to customize how FIO operates
-      command+=" --filename=${device_to_warm} ${nicecmd} --rw=read --bs=128k --iodepth=32 --ioengine=libaio --direct=1 --name=volume-initialize-$(basename ${device_to_warm})"
+      command+=" --filename=${device_to_warm} ${nicecmd} --rw=read --bs=128k --iodepth=32 --ioengine=libaio --direct=1 --output ${REPORTANDDONEMARKERFILE} --name=volume-initialize-$(basename ${device_to_warm})"
     fi
   done
-  if [[ -e '/var/tmp/initializediskswithfio.done' ]]; then
-    echo "WARNING: Presence of /var/tmp/initializediskswithfio.done indicates FIO has completed it's run on this system, doing nothing."
+  if [[ -e "${REPORTANDDONEMARKERFILE}" ]]; then
+    echo "WARNING: Presence of \"${REPORTANDDONEMARKERFILE}\" indicates FIO has completed its run on this system, doing nothing."
     echo "Remove this file to run again."
     removecronjobifitexists
     exit 0
@@ -294,8 +295,7 @@ if [[ ! -z "${blkdevlist[*]}" ]]; then
     echo "running command: '$command'"
     $SUDO $FIOPATHNAME ${command}
     echo "EBS volume(s) ${blkdevlist} completed initialization, marking as done and removing cron job if it was setup."
-    echo "INFO: /var/tmp/initializediskswithfio.done would need to be removed to run again."
-    echo $(date) > /var/tmp/initializediskswithfio.done
+    echo "INFO: ${REPORTANDDONEMARKERFILE} would need to be removed to run again."
     removecronjobifitexists
   fi
 fi
@@ -313,7 +313,4 @@ Tests:
 - copy fio from installed location to current folder ( cp $(command -v fio) .) and uninstall 
   package and run script (should find colocated version and not auto install)
 - run from web with schedule parameter
-
-Todos:
-- save output report from fio
 COMMENT
