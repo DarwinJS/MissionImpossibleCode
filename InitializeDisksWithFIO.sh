@@ -247,27 +247,13 @@ if [[ ! -z "${blkdevlist[*]}" ]]; then
       command+=" --filename=${device_to_warm} ${nicecmd} --rw=read --bs=128k --iodepth=32 --ioengine=libaio --direct=1 --name=volume-initialize-$(basename ${device_to_warm})"
     fi
   done
-  if [[ -z "${recurrenceminutes}" ]]; then
-    echo "Running FIO now..."
-    if [[ -e '/var/tmp/initializediskswithfio.done' ]]; then
-      echo "WARNING: Presence of /var/tmp/initializediskswithfio.done indicates FIO has completed it's run on this system, doing nothing."
-      echo "Remove this file to run again."
-      removecronjobifitexists
-      exit 0
-    fi
-    # NOTE having one letter of the regex square bracketed prevents grep from finding itself, otherwise it needs to be > 1
-    if [[ $(ps aux | grep -c "/[f]io[/s]*") > 0 ]]; then 
-      echo "fio is already running, exiting..."
-      exit 0
-    fi
-    echo "Initializing the EBS volume(s) ${blkdevlist} ..."
-    echo "running command: '$command'"
-    $SUDO $FIOPATHNAME ${command}
-    echo "EBS volume(s) ${blkdevlist} completed initialization, marking as done and removing cron job if it was setup."
-    echo "INFO: /var/tmp/initializediskswithfio.done would need to be removed to run again."
-    echo $(date) > /var/tmp/initializediskswithfio.done
+  if [[ -e '/var/tmp/initializediskswithfio.done' ]]; then
+    echo "WARNING: Presence of /var/tmp/initializediskswithfio.done indicates FIO has completed it's run on this system, doing nothing."
+    echo "Remove this file to run again."
     removecronjobifitexists
-  else
+    exit 0
+  fi
+  if [[ -z "${recurrenceminutes}" ]]; then
     echo "SCHEDULING: Initializing the EBS volume(s) ${blkdevlist} ..."
     echo "SCHEDULING: command: '$command' for every ${recurrenceminutes} minutes until all initializations complete."
     SCRIPTNAME=/etc/cron.d/InitializeDisksWithFIO.sh
@@ -290,6 +276,20 @@ if [[ ! -z "${blkdevlist[*]}" ]]; then
       $SUDO chmod 644 /etc/crontab
     fi
     exit 0
+  else
+    echo "Running FIO now..."
+    # NOTE having one letter of the regex square bracketed prevents grep from finding itself, otherwise it needs to be > 1
+    if [[ $(ps aux | grep -c "/[f]io[/s]*") > 0 ]]; then 
+      echo "fio is already running, exiting..."
+      exit 0
+    fi
+    echo "Initializing the EBS volume(s) ${blkdevlist} ..."
+    echo "running command: '$command'"
+    $SUDO $FIOPATHNAME ${command}
+    echo "EBS volume(s) ${blkdevlist} completed initialization, marking as done and removing cron job if it was setup."
+    echo "INFO: /var/tmp/initializediskswithfio.done would need to be removed to run again."
+    echo $(date) > /var/tmp/initializediskswithfio.done
+    removecronjobifitexists
   fi
 fi
 if [[ -n "${crontriggeredrun}" ]]; then
