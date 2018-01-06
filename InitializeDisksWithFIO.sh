@@ -84,7 +84,7 @@ fi
 
 displaybanner
 
-removecronjob(){
+removecronjobifitexists(){
 if [[ ! -z "$($SUDO cat /etc/crontab | grep '/etc/cron.d/InitializeDisksWithFIO.sh')" ]]; then
   echo "Removing cron job and script file /etc/cron.d/InitializeDisksWithFIO.sh"
   FILECONTENTS=`cat /etc/crontab` ; echo "${FILECONTENTS}" | grep -v '/etc/cron.d/InitializeDisksWithFIO.sh'  | $SUDO tee /etc/crontab > /dev/null
@@ -139,7 +139,7 @@ while getopts ":cbvhud:n:s:r:" opt; do
       ;;
     u)
       [[ -z "${bareoutput}" ]] && echo "removing cron job if it exists" >&2
-      removecronjob
+      removecronjobifitexists
       ;;
     v)
       emitversion
@@ -248,20 +248,25 @@ if [[ ! -z "${blkdevlist[*]}" ]]; then
     fi
   done
   if [[ -z "${recurrenceminutes}" ]]; then
+    echo "Running FIO now..."
     if [[ -e '/var/tmp/initializediskswithfio.done' ]]; then
       echo "WARNING: Presence of /var/tmp/initializediskswithfio.done indicates FIO has completed it's run on this system, doing nothing."
       echo "Remove this file to run again."
-      removecronjob
+      removecronjobifitexists
       exit 0
-    fi    
-    ( #Only one copy can be actually doing a fio run
-    flock -n 9 || exit 0
+    fi
+    # NOTE having one letter of the regex square bracketed prevents grep from finding itself, otherwise it needs to be > 1
+    if [[ $(ps aux | grep -c "/[f]io[/s]*") > 0 ]]; then 
+      echo "fio is already running, exiting..."
+      exit 0
+    fi
     echo "Initializing the EBS volume(s) ${blkdevlist} ..."
     echo "running command: '$command'"
     $SUDO $FIOPATHNAME ${command}
-    echo "EBS volume(s) ${blkdevlist} initialized !"
+    echo "EBS volume(s) ${blkdevlist} completed initialization, marking as done and removing cron job if it was setup."
+    echo "INFO: /var/tmp/initializediskswithfio.done would need to be removed to run again."
     echo $(date) > /var/tmp/initializediskswithfio.done
-    ) 9>/var/lock/initializediskswithfio.lock
+    removecronjobifitexists
   else
     echo "SCHEDULING: Initializing the EBS volume(s) ${blkdevlist} ..."
     echo "SCHEDULING: command: '$command' for every ${recurrenceminutes} minutes until all initializations complete."
@@ -289,7 +294,7 @@ if [[ ! -z "${blkdevlist[*]}" ]]; then
 fi
 if [[ -n "${crontriggeredrun}" ]]; then
   echo "Completed successfully, removing cron job"
-  removecronjob
+  removecronjobifitexists
 fi
 
 
