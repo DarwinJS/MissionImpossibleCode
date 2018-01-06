@@ -4,7 +4,7 @@
 set -o errexit
 set -eo pipefail
 
-SCRIPT_VERSION=1.2.0
+SCRIPT_VERSION=1.2.1
 SCRIPTNETLOCATION=https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/InitializeDisksWithFIO.sh
 
 usage(){
@@ -259,7 +259,8 @@ if [[ ! -z "${blkdevlist[*]}" ]]; then
     removecronjobifitexists
     exit 0
   fi
-  if [[ -z "${recurrenceminutes}" ]]; then
+  #We are either scheduling to run or running now...
+  if [[ -n "${recurrenceminutes}" ]]; then
     echo "SCHEDULING: Initializing the EBS volume(s) ${blkdevlist} ..."
     echo "SCHEDULING: command: '$command' for every ${recurrenceminutes} minutes until all initializations complete."
     SCRIPTNAME=/etc/cron.d/InitializeDisksWithFIO.sh
