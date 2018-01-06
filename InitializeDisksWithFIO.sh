@@ -4,7 +4,7 @@
 set -o errexit
 set -eo pipefail
 
-SCRIPT_VERSION=1.3.3
+SCRIPT_VERSION=1.3.4
 SCRIPTNETLOCATION=https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/InitializeDisksWithFIO.sh
 REPORTFILE=/var/tmp/initializediskswithfioreport.txt
 DONEMARKERFILE=/var/tmp/initializediskswithfio.done
@@ -150,6 +150,7 @@ while getopts ":cbvhud:n:s:r:" opt; do
     u)
       [[ -z "${bareoutput}" ]] && echo "removing cron job if it exists" >&2
       removecronjobifitexists
+      exit 0
       ;;
     v)
       emitversion
