@@ -4,7 +4,7 @@
 set -o errexit
 set -eo pipefail
 
-SCRIPT_VERSION=1.3.5
+SCRIPT_VERSION=1.3.6
 SCRIPTNETLOCATION=https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/InitializeDisksWithFIO.sh
 REPORTFILE=/var/tmp/initializediskswithfioreport.txt
 DONEMARKERFILE=/var/tmp/initializediskswithfio.done
@@ -285,6 +285,8 @@ if [[ ! -z "${blkdevlist[*]}" ]]; then
     $SUDO chown root:root "${SCRIPTNAME}"
     $SUDO chmod 644 "${SCRIPTNAME}"
     if [[ -z "$($SUDO cat /etc/crontab | grep ${SCRIPTBASENAME})" ]]; then
+      #Strip -r or else the cron job will just keep rescheduling itself.  
+      #Strip -c if it exists so we wont have two when we insert -c
       STRIPEDRPARAM=$(echo "$@" | sed 's/\-r\ [0-9]//' | sed 's/\-c//')
       echo "*/${recurrenceminutes} * * * * root bash ${SCRIPTNAME} ${STRIPEDRPARAM} -c" | $SUDO tee -a /etc/crontab > /dev/null
       $SUDO chown root:root /etc/crontab
@@ -301,10 +303,14 @@ if [[ ! -z "${blkdevlist[*]}" ]]; then
     echo "Initializing the EBS volume(s) ${blkdevlist} ..."
     echo "running command: '$command'"
     $SUDO $FIOPATHNAME ${command}
-    echo "EBS volume(s) ${blkdevlist} completed initialization, marking as done and removing cron job if it was setup."
-    echo "INFO: ${DONEMARKERFILE} would need to be removed to either run or schedule again."
-    echo $(date) > "${DONEMARKERFILE}"
-    RemoveCronJobIfItExists
+    if [[ $? -eq 0 ]]; then
+      echo "EBS volume(s) ${blkdevlist} completed initialization, marking as done and removing cron job if it was setup."
+      echo "INFO: ${DONEMARKERFILE} would need to be removed to either run or schedule again."
+      echo $(date) > "${DONEMARKERFILE}"
+      RemoveCronJobIfItExists
+    else
+      echo "fio did not complete successfully."
+    fi
   fi
 fi
 if [[ -n "${crontriggeredrun}" ]]; then
