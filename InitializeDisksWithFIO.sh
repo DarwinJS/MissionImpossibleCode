@@ -26,7 +26,7 @@ usage(){
     $0 -d \"/dev/sda /dev/xda\" # initialize specified devices at full device path as specified
     $0 -d \"/dev/sda1\" # initialize specified partition at full device path as specified
     $0 -n 5 # use specified nice cpu priority to initialize all local, writable, non-removable disk devices, range -20 to 19
-    $0 -b # bare - must be used as first argument - suppresses banner and extraneous output (including on emitversion)
+    $0 -b # bare - must be used as first argument - suppresses banner and extraneous output (including on EmitVersion)
     $0 -v # emit script name and version
     $0 -b -v # emit only script version (good for comparing whether local version is older than latest online version)
     $0 -r 5 # schedule every 5 minutes (only a single instance ever runs), range: 1-59
@@ -54,7 +54,8 @@ usage(){
     - CPU throttling (nice)
     - skips non-existence devices
     - takes device list (full path or just last path part) (use -d)
-    - if no device list, enumerates all local, writable, non-removable devices
+    - if no device list, enumerates all local, writable, non-removable devices 
+      (override incorrect device detection by specifying device list)
     - emits version (can be used to update or warn when a local copy is older than the latest online version)
 
     Completion and Cleanup (when fio runs to completion)
@@ -73,7 +74,7 @@ usage(){
 EndOfHereDocument1
 }
 
-emitversion(){
+EmitVersion(){
   if [[ -z "$bareoutput" ]]; then
     echo "The version of ${0} is ${SCRIPT_VERSION}"
   else
@@ -81,7 +82,7 @@ emitversion(){
   fi
 }
 
-displaybanner(){
+DisplayBanner(){
 if [[ -z "${bareoutput}" ]]; then
   cat <<- EndOfHereDocument2
 
@@ -92,9 +93,9 @@ EndOfHereDocument2
 fi
 }
 
-displaybanner
+DisplayBanner
 
-removecronjobifitexists(){
+RemoveCronJobIfItExists(){
 if [[ ! -z "$($SUDO cat /etc/crontab | grep '/etc/cron.d/InitializeDisksWithFIO.sh')" ]]; then
   echo "Removing cron job and script file /etc/cron.d/InitializeDisksWithFIO.sh"
   FILECONTENTS=`cat /etc/crontab` ; echo "${FILECONTENTS}" | grep -v '/etc/cron.d/InitializeDisksWithFIO.sh'  | $SUDO tee /etc/crontab > /dev/null
@@ -149,11 +150,11 @@ while getopts ":cbvhud:n:s:r:" opt; do
       ;;
     u)
       [[ -z "${bareoutput}" ]] && echo "removing cron job if it exists" >&2
-      removecronjobifitexists
+      RemoveCronJobIfItExists
       exit 0
       ;;
     v)
-      emitversion
+      EmitVersion
       exit 0
       ;;
     h)
@@ -261,7 +262,7 @@ if [[ ! -z "${blkdevlist[*]}" ]]; then
   if [[ -e "${DONEMARKERFILE}" ]]; then
     echo "WARNING: Presence of \"${DONEMARKERFILE}\" indicates FIO has completed its run on this system, doing nothing."
     echo "Remove this file to run again."
-    removecronjobifitexists
+    RemoveCronJobIfItExists
     exit 0
   fi
   #We are either scheduling to run or running now...
@@ -301,12 +302,12 @@ if [[ ! -z "${blkdevlist[*]}" ]]; then
     echo "EBS volume(s) ${blkdevlist} completed initialization, marking as done and removing cron job if it was setup."
     echo "INFO: ${DONEMARKERFILE} would need to be removed to run again."
     echo $(date) > "${DONEMARKERFILE}"
-    removecronjobifitexists
+    RemoveCronJobIfItExists
   fi
 fi
 if [[ -n "${crontriggeredrun}" ]]; then
   echo "Completed successfully, removing cron job"
-  removecronjobifitexists
+  RemoveCronJobIfItExists
 fi
 
 
