@@ -4,7 +4,7 @@
 set -o errexit
 set -eo pipefail
 
-SCRIPT_VERSION=1.1.2
+SCRIPT_VERSION=1.2.0
 SCRIPTNETLOCATION=https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/InitializeDisksWithFIO.sh
 
 usage(){
@@ -36,21 +36,27 @@ usage(){
     wget https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/InitializeDisksWithFIO.sh -O ./InitializeDisksWithFIO.sh
 
   Features:
+    Deploying Solution
     - oneliner to download from web and run
     - complete offline operation by copying script and installing fio on image
     - defaults to use fio from path or current directory
     - on the fly install of FIO (supports CentOS, RedHat, Ubuntu, Amazon Linux (1 & 2)), 
       other distros will probably work if you place the distro matched edition of fio next to this script
-    - initialize multiple devices in parallel (default)
-    - CPU throttling (nice)
     - schedule recurrent cron job for (only a single instance ever runs):
       - reboot resilience - cron job is recurrent each x minutes and self deletes after successful completion
       - future run - up to 59 minutes away (e.g. allow other automation to complete) 
       - parallel run - allow automation to continue (set -r 1) 
+
+    - initialize multiple devices in parallel (default)
+    - CPU throttling (nice)
     - skips non-existence devices
     - takes device list (full path or just last path part) (use -d)
     - if no device list, enumerates all local, writable, non-removable devices
     - emits version (can be used to update or warn when a local copy is older than the latest online version)
+
+    Completion and Cleanup (when fio runs to completion)
+    - marks initialization done - which preempts further runs and scheduling until done file is removed
+    - removes cron job and copy of script in /etc/cron.d
 
   Notes on Scheduling
     - If you run the script directly from a URL to schedule it, the original script code must be re-downloaded 
