@@ -6,7 +6,8 @@ set -eo pipefail
 
 SCRIPT_VERSION=1.3.0
 SCRIPTNETLOCATION=https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/InitializeDisksWithFIO.sh
-REPORTANDDONEMARKERFILE=/var/tmp/initializedisksreportinthisfile.done
+REPORTFILE=/var/tmp/initializediskswithfio.done
+DONEMARKERFILE=/var/tmp/initializediskswithfioreport.txt
 
 usage(){
   cat <<- EndOfHereDocument1
@@ -48,6 +49,7 @@ usage(){
       - future run - up to 59 minutes away (e.g. allow other automation to complete) 
       - parallel run - allow automation to continue (set -r 1) 
 
+    Running
     - initialize multiple devices in parallel (default)
     - CPU throttling (nice)
     - skips non-existence devices
@@ -56,6 +58,7 @@ usage(){
     - emits version (can be used to update or warn when a local copy is older than the latest online version)
 
     Completion and Cleanup (when fio runs to completion)
+    - saves fio output report
     - marks initialization done - which preempts further runs and scheduling until done file is removed
     - removes cron job and copy of script in /etc/cron.d
 
@@ -251,11 +254,11 @@ if [[ ! -z "${blkdevlist[*]}" ]]; then
         nicecmd="--nice=${nicelevel}"
       fi
       #Customize this line if you wish to customize how FIO operates
-      command+=" --filename=${device_to_warm} ${nicecmd} --rw=read --bs=128k --iodepth=32 --ioengine=libaio --direct=1 --output ${REPORTANDDONEMARKERFILE} --name=volume-initialize-$(basename ${device_to_warm})"
+      command+=" --filename=${device_to_warm} ${nicecmd} --rw=read --bs=128k --iodepth=32 --ioengine=libaio --direct=1 --output ${REPORTFILE} --name=volume-initialize-$(basename ${device_to_warm})"
     fi
   done
-  if [[ -e "${REPORTANDDONEMARKERFILE}" ]]; then
-    echo "WARNING: Presence of \"${REPORTANDDONEMARKERFILE}\" indicates FIO has completed its run on this system, doing nothing."
+  if [[ -e "${DONEMARKERFILE}" ]]; then
+    echo "WARNING: Presence of \"${DONEMARKERFILE}\" indicates FIO has completed its run on this system, doing nothing."
     echo "Remove this file to run again."
     removecronjobifitexists
     exit 0
@@ -295,7 +298,8 @@ if [[ ! -z "${blkdevlist[*]}" ]]; then
     echo "running command: '$command'"
     $SUDO $FIOPATHNAME ${command}
     echo "EBS volume(s) ${blkdevlist} completed initialization, marking as done and removing cron job if it was setup."
-    echo "INFO: ${REPORTANDDONEMARKERFILE} would need to be removed to run again."
+    echo "INFO: ${DONEMARKERFILE} would need to be removed to run again."
+    echo $(date) > "${DONEMARKERFILE}"
     removecronjobifitexists
   fi
 fi
