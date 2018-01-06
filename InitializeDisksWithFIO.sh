@@ -40,12 +40,15 @@ usage(){
   Features:
     Deploying Solution
     - oneliner to download from web and run
-    - complete offline operation by copying script and installing fio on image
-    - defaults to use fio from path or current directory
+    - complete offline operation by copying script and installing or copying fio to image
+    - defaults to prefer using fio from path or current directory
     - on the fly install of FIO (supports CentOS, RedHat, Ubuntu, Amazon Linux (1 & 2)), 
-      other distros will probably work if you place the distro matched edition of fio next to this script
+      other distros will probably work if you pre-install fio or place the distro matched 
+      edition of fio next to this script
+    - requires root or sudo - auto-detects what to use - errors if neither is available
     - schedule recurrent cron job for (only a single instance ever runs):
-      - reboot resilience - cron job is recurrent each x minutes and self deletes after successful completion
+      - reboot resilience - cron job is recurrent each x minutes and self deletes after 
+        successful completion
       - future run - up to 59 minutes away (e.g. allow other automation to complete) 
       - parallel run - allow automation to continue (set -r 1) 
 
@@ -261,8 +264,7 @@ if [[ ! -z "${blkdevlist[*]}" ]]; then
   done
   if [[ -e "${DONEMARKERFILE}" ]]; then
     echo "WARNING: Presence of \"${DONEMARKERFILE}\" indicates FIO has completed its run on this system, doing nothing."
-    echo "Remove this file to run again."
-    RemoveCronJobIfItExists
+    echo "INFO: ${DONEMARKERFILE} would need to be removed to either run or schedule again."
     exit 0
   fi
   #We are either scheduling to run or running now...
@@ -300,7 +302,7 @@ if [[ ! -z "${blkdevlist[*]}" ]]; then
     echo "running command: '$command'"
     $SUDO $FIOPATHNAME ${command}
     echo "EBS volume(s) ${blkdevlist} completed initialization, marking as done and removing cron job if it was setup."
-    echo "INFO: ${DONEMARKERFILE} would need to be removed to run again."
+    echo "INFO: ${DONEMARKERFILE} would need to be removed to either run or schedule again."
     echo $(date) > "${DONEMARKERFILE}"
     RemoveCronJobIfItExists
   fi
