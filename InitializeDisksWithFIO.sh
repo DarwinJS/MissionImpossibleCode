@@ -285,7 +285,7 @@ if [[ ! -z "${blkdevlist[*]}" ]]; then
     $SUDO chown root:root "${SCRIPTNAME}"
     $SUDO chmod 644 "${SCRIPTNAME}"
     if [[ -z "$($SUDO cat /etc/crontab | grep ${SCRIPTBASENAME})" ]]; then
-      STRIPEDRPARAM=echo "$@" | sed 's/-r\ [0-9]//' | sed 's/-c//'
+      STRIPEDRPARAM=echo "$@" | sed 's/\-r\ [0-9]//' | sed 's/\-c//'
       echo "*/${recurrenceminutes} * * * * root bash ${SCRIPTNAME} ${STRIPEDRPARAM} -c" | $SUDO tee -a /etc/crontab > /dev/null
       $SUDO chown root:root /etc/crontab
       $SUDO chmod 644 /etc/crontab
