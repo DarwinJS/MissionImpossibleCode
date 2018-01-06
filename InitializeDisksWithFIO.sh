@@ -4,7 +4,7 @@
 set -o errexit
 set -eo pipefail
 
-SCRIPT_VERSION=1.3.0
+SCRIPT_VERSION=1.3.2
 SCRIPTNETLOCATION=https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/InitializeDisksWithFIO.sh
 REPORTFILE=/var/tmp/initializediskswithfio.done
 DONEMARKERFILE=/var/tmp/initializediskswithfioreport.txt
