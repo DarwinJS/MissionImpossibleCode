@@ -4,7 +4,7 @@
 set -o errexit
 set -eo pipefail
 
-SCRIPT_VERSION=1.3.4
+SCRIPT_VERSION=1.3.5
 SCRIPTNETLOCATION=https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/InitializeDisksWithFIO.sh
 REPORTFILE=/var/tmp/initializediskswithfioreport.txt
 DONEMARKERFILE=/var/tmp/initializediskswithfio.done
@@ -285,7 +285,7 @@ if [[ ! -z "${blkdevlist[*]}" ]]; then
     $SUDO chown root:root "${SCRIPTNAME}"
     $SUDO chmod 644 "${SCRIPTNAME}"
     if [[ -z "$($SUDO cat /etc/crontab | grep ${SCRIPTBASENAME})" ]]; then
-      STRIPEDRPARAM= echo "$@" | sed -r 's/-r [0-9]+ //g' | sed -r 's/-c //g'
+      STRIPEDRPARAM=echo "$@" | sed 's/-r\ [0-9]//' | sed 's/-c//'
       echo "*/${recurrenceminutes} * * * * root bash ${SCRIPTNAME} ${STRIPEDRPARAM} -c" | $SUDO tee -a /etc/crontab > /dev/null
       $SUDO chown root:root /etc/crontab
       $SUDO chmod 644 /etc/crontab
