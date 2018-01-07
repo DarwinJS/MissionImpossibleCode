@@ -210,15 +210,6 @@ DisplayBanner
 #Allow FIO to just be in the same folder as the script or the current folder when pulling from web
 [[ ":$PATH:" != *":$(pwd):"* ]] && PATH="${PATH}:$(pwd)"
 
-DIST=`cat /etc/system-release |sed s/\ release.*//`
-if [[ -f /etc/redhat-release ]] ; then
-  REV=`cat /etc/redhat-release | sed s/.*release\ // | sed s/\ .*//`
-elif [[ -f /etc/system-release ]] ; then
-  REV=`cat /etc/system-release | sed s/.*release\ // | sed s/\ .*//`
-fi
-REVMAJOR="$(echo $REV | awk -F \. {'print $1'})"
-echo "Running on ${DIST} version ${REV}"
-
 if [[ -z "$(command -v fio)" ]] ; then
   echo "ATTENTION: fio not found on path, installing from public repository..."
   echo "NOTE: Place a copy of fio on the path or next to this script to avoid automatic installation."
@@ -239,6 +230,14 @@ if [[ -z "$(command -v fio)" ]] ; then
       repoenabled=true
     elif [[ -z "$(yum repolist enabled | grep 'epel/')" ]] ; then
       echo "epel repository not available, configuring (will be returned to original configuration after install)..."
+      DIST=`cat /etc/system-release |sed s/\ release.*//`
+      if [[ -f /etc/redhat-release ]] ; then
+        REV=`cat /etc/redhat-release | sed s/.*release\ // | sed s/\ .*//`
+      elif [[ -f /etc/system-release ]] ; then
+        REV=`cat /etc/system-release | sed s/.*release\ // | sed s/\ .*//`
+      fi
+      REVMAJOR="$(echo $REV | awk -F \. {'print $1'})"
+      echo "Running on ${DIST} version ${REV}"
       if [[ ! ($DIST == *"Amazon Linux"* && $REV == "2.0") ]] ; then
         #Amazon Linux 2.0 has fio in it's standard repo, no need to enable anything
         wget https://dl.fedoraproject.org/pub/epel/epel-release-latest-$REVMAJOR.noarch.rpm
