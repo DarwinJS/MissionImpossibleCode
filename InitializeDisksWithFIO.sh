@@ -4,7 +4,7 @@
 set -o errexit
 set -eo pipefail
 
-SCRIPT_VERSION=1.3.6
+SCRIPT_VERSION=1.3.7
 SCRIPTNETLOCATION=https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/InitializeDisksWithFIO.sh
 REPORTFILE=/var/tmp/initializediskswithfioreport.txt
 DONEMARKERFILE=/var/tmp/initializediskswithfio.done
@@ -16,18 +16,28 @@ usage(){
 
   You must be root or able to SUDO (to list sizes of block devices)
 
-  Usage: $0 [-d \"sda xda\"]
+  Usage: $0 [-b] [-v] [-h] [-n 10] [-u] [-r 5] [-d \"sda xda\"]
 
-  When -d is not used, all local, writable, non-removable devices are initialized.
+  -b - bare output - must be used as first argument
+  -v - emit version and exit
+  -h - show help
+  -n <int> - use nice to throttle CPU usage. Range: -20 to 19
+  -u - unschedule (if scheduled)
+  -r <int> - schedule to run every x minutes.  Range: 1 to 59.
+      Use for: (a) synchcronous (parallel) execution, (b) reboot resilience, (c) run after other automation complete (max 59 mins).
+      Once device initialization is successfully accomplished, script removes itself from cron and from the system.
+      When -r is not used, the command runs asyncrhonously.
+  -d - space seperated list of block devices, when not used, all local, writable, non-removable devices are initialized.
+      Takes either bare device names from /dev or full device names.
+      Use full device names to limit initialization to specific partitions AND/OR to 
+      override incorrect detection of local, writable, non-removable devices.
 
   Examples:
-    $0 # initialize all local, writable, non-removable disk devices
+    $0    # (no args) initialize all local, writable, non-removable disk devices immediately
     $0 -d \"sda xda\" # initialize specified devices at /dev/
     $0 -d \"/dev/sda /dev/xda\" # initialize specified devices at full device path as specified
     $0 -d \"/dev/sda1\" # initialize specified partition at full device path as specified
     $0 -n 5 # use specified nice cpu priority to initialize all local, writable, non-removable disk devices, range -20 to 19
-    $0 -b # bare - must be used as first argument - suppresses banner and extraneous output (including on EmitVersion)
-    $0 -v # emit script name and version
     $0 -b -v # emit only script version (good for comparing whether local version is older than latest online version)
     $0 -r 5 # schedule every 5 minutes (only a single instance ever runs), range: 1-59
     
@@ -35,7 +45,8 @@ usage(){
     bash <(wget -O - https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/InitializeDisksWithFIO.sh) <arguments>
 
     DOWNLOAD FROM GITHUB:
-    wget https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/InitializeDisksWithFIO.sh -O ./InitializeDisksWithFIO.sh
+    wget https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/InitializeDisksWithFIO.sh -O /tmp/InitializeDisksWithFIO.sh
+    /tmp/InitializeDisksWithFIO.sh -b -v
 
   Features:
     Deploying Solution
@@ -83,6 +94,7 @@ EmitVersion(){
   else
     echo "${SCRIPT_VERSION}"
   fi
+  exit 0
 }
 
 DisplayBanner(){
@@ -95,8 +107,6 @@ if [[ -z "${bareoutput}" ]]; then
 EndOfHereDocument2
 fi
 }
-
-DisplayBanner
 
 RemoveCronJobIfItExists(){
 if [[ ! -z "$($SUDO cat /etc/crontab | grep '/etc/cron.d/InitializeDisksWithFIO.sh')" ]]; then
@@ -176,6 +186,8 @@ while getopts ":cbvhud:n:s:r:" opt; do
       ;;
   esac
 done
+
+DisplayBanner
 
 #Allow FIO to just be in the same folder as the script or the current folder when pulling from web
 [[ ":$PATH:" != *":$(pwd):"* ]] && PATH="${PATH}:$(pwd)"
