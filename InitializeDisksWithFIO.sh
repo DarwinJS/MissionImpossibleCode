@@ -4,7 +4,7 @@
 set -o errexit
 set -eo pipefail
 
-SCRIPT_VERSION=1.7
+SCRIPT_VERSION=1.8
 SCRIPTNETLOCATION=https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/InitializeDisksWithFIO.sh
 REPORTFILE=/var/tmp/initializediskswithfioreport.txt
 DONEMARKERFILE=/var/tmp/initializediskswithfio.done
@@ -242,6 +242,7 @@ if [[ -z "$(command -v fio)" ]] ; then
       echo "REVMAJOR is $REVMAJOR"
       if [[ $DIST == *"Amazon Linux"* ]] ; then
         sudo yum-config-manager --enable epel
+        repoenabled=true                
       else
         wget https://dl.fedoraproject.org/pub/epel/epel-release-latest-$REVMAJOR.noarch.rpm
         $SUDO yum install -y ./epel-release-latest-*.noarch.rpm
