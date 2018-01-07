@@ -4,7 +4,7 @@
 set -o errexit
 set -eo pipefail
 
-SCRIPT_VERSION=1.6
+SCRIPT_VERSION=1.7
 SCRIPTNETLOCATION=https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/InitializeDisksWithFIO.sh
 REPORTFILE=/var/tmp/initializediskswithfioreport.txt
 DONEMARKERFILE=/var/tmp/initializediskswithfio.done
@@ -25,7 +25,8 @@ usage(){
   -u - unschedule (if scheduled)
   -r <int> - schedule to run every x minutes.  Range: 1 to 59.
       Use for: (a) synchcronous (parallel) execution, (b) reboot resilience, (c) run after other automation complete (max 59 mins).
-      Can re-write schedule by re-running with -r.
+      -r will also update existing schedule 
+      -r also pushes source script version if you are not rerunning the local script (upgrades or downgrades to source version)
       Once device initialization is successfully accomplished, script removes itself from cron and from the system.
       When -r is not used, the command runs asyncrhonously.
   -d - space seperated list of block devices, when not used, all local, writable, non-removable devices are initialized.
@@ -303,7 +304,7 @@ if [[ ! -z "${blkdevlist[*]}" ]]; then
       wget ${SCRIPTNETLOCATION} -O /tmp/InitializeDisksWithFIO.sh
       $SUDO mv /tmp/InitializeDisksWithFIO.sh "${SCRIPTFOLDER}"
     else
-      $SUDO mv $0 "${SCRIPTNAME}"
+      [[ "$0" != "${SCRIPTNAME}" ]] && $SUDO mv $0 "${SCRIPTNAME}"
     fi
     $SUDO chown root:root "${SCRIPTNAME}"
     $SUDO chmod 644 "${SCRIPTNAME}"
