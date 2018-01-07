@@ -47,8 +47,6 @@ usage(){
     $0 -b -v # emit only script version (good for comparing whether local version is older than latest online version)
     
     DOWNLOAD AND RUN FROM GITHUB:
-    sudo bash <(wget -O - https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/InitializeDisksWithFIO.sh) <arguments>
-    # The above works with directly running and scheduling, but does not exit with some arguments like -v, the below always works and is used in the code sample for update checking
     wget https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/InitializeDisksWithFIO.sh -O /tmp/InitializeDisksWithFIO.sh ; sudo bash /tmp/InitializeDisksWithFIO.sh -b -v
 
   Features:
