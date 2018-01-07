@@ -27,6 +27,7 @@ usage(){
       Use for: (a) synchcronous (parallel) execution, (b) reboot resilience, (c) run after other automation complete (max 59 mins).
       -r will also update existing schedule 
       -r also pushes source script version if you are not rerunning the local script (upgrades or downgrades to source version)
+      Ok to reschedule by calling /etc/cron.d/InitializeDisksWithFIO.sh -r <newvalue>
       Once device initialization is successfully accomplished, script removes itself from cron and from the system.
       When -r is not used, the command runs asyncrhonously.
   -d - space seperated list of block devices, when not used, all local, writable, non-removable devices are initialized.
@@ -46,7 +47,8 @@ usage(){
     $0 -b -v # emit only script version (good for comparing whether local version is older than latest online version)
     
     DOWNLOAD AND RUN FROM GITHUB:
-    
+    sudo bash <(wget -O - https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/InitializeDisksWithFIO.sh) <arguments>
+    # The above works with directly running and scheduling, but does not exit with some arguments like -v, the below always works and is used in the code sample for update checking
     wget https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/InitializeDisksWithFIO.sh -O /tmp/InitializeDisksWithFIO.sh ; sudo bash /tmp/InitializeDisksWithFIO.sh -b -v
 
   Features:
@@ -128,6 +130,10 @@ if [[ -e /etc/cron.d/InitializeDisksWithFIO.sh ]]; then
   echo "Removing cron job script file /etc/cron.d/InitializeDisksWithFIO.sh"
   $SUDO rm /etc/cron.d/InitializeDisksWithFIO.sh -f
 fi
+}
+
+lowercase(){
+    echo "$1" | sed "y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/"
 }
 
 # configure SUDO if we are not root
@@ -225,15 +231,21 @@ if [[ -z "$(command -v fio)" ]] ; then
     elif [[ -z "$(yum repolist enabled | grep 'epel/')" ]] ; then
       echo "epel repository not available, configuring (will be returned to original configuration after install)..."
       repoadded=true
+      DIST=`cat /etc/system-release |sed s/\ release.*//`
       if [[ -f /etc/redhat-release ]] ; then
         REV=`cat /etc/redhat-release | sed s/.*release\ // | sed s/\ .*//`
       elif [[ -f /etc/system-release ]] ; then
         REV=`cat /etc/system-release | sed s/.*release\ // | sed s/\ .*//`
       fi
       REVMAJOR="$(echo $REV | awk -F \. {'print $1'})"
+      echo "DIST is ${DIST}"
       echo "REVMAJOR is $REVMAJOR"
-      wget https://dl.fedoraproject.org/pub/epel/epel-release-latest-$REVMAJOR.noarch.rpm
-      $SUDO yum install -y ./epel-release-latest-*.noarch.rpm
+      if [[ $DIST == *"Amazon Linux"* ]] ; then
+        sudo yum-config-manager --enable epel
+      else
+        wget https://dl.fedoraproject.org/pub/epel/epel-release-latest-$REVMAJOR.noarch.rpm
+        $SUDO yum install -y ./epel-release-latest-*.noarch.rpm
+      fi
     fi
     $SUDO $packagemanager install fio -y
     echo "Returning epel repository to original state"
