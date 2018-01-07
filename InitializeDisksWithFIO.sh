@@ -4,7 +4,7 @@
 set -o errexit
 set -eo pipefail
 
-SCRIPT_VERSION=1.4
+SCRIPT_VERSION=1.5
 SCRIPTNETLOCATION=https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/InitializeDisksWithFIO.sh
 REPORTFILE=/var/tmp/initializediskswithfioreport.txt
 DONEMARKERFILE=/var/tmp/initializediskswithfio.done
@@ -110,10 +110,16 @@ fi
 
 RemoveCronJobIfItExists(){
 if [[ ! -z "$($SUDO cat /etc/crontab | grep '/etc/cron.d/InitializeDisksWithFIO.sh')" ]]; then
-  echo "Removing cron job and script file /etc/cron.d/InitializeDisksWithFIO.sh"
+  echo "Removing cron job"
   FILECONTENTS=`cat /etc/crontab` ; echo "${FILECONTENTS}" | grep -v '/etc/cron.d/InitializeDisksWithFIO.sh'  | $SUDO tee /etc/crontab > /dev/null
   $SUDO chown root:root /etc/crontab
   $SUDO chmod 644 /etc/crontab
+fi
+}
+
+RemoveCronScriptIfItExists(){
+if [[ -e /etc/cron.d/InitializeDisksWithFIO.sh ]]; then
+  echo "Removing cron job script file /etc/cron.d/InitializeDisksWithFIO.sh"
   $SUDO rm /etc/cron.d/InitializeDisksWithFIO.sh -f
 fi
 }
@@ -164,6 +170,7 @@ while getopts ":cbvhud:n:s:r:" opt; do
     u)
       [[ -z "${bareoutput}" ]] && echo "removing cron job if it exists" >&2
       RemoveCronJobIfItExists
+      RemoveCronScriptIfItExists
       exit 0
       ;;
     v)
@@ -296,14 +303,13 @@ if [[ ! -z "${blkdevlist[*]}" ]]; then
     fi
     $SUDO chown root:root "${SCRIPTNAME}"
     $SUDO chmod 644 "${SCRIPTNAME}"
-    if [[ -z "$($SUDO cat /etc/crontab | grep ${SCRIPTBASENAME})" ]]; then
-      #Strip -r or else the cron job will just keep rescheduling itself.  
-      #Strip -c if it exists so we wont have two when we insert -c
-      STRIPEDRPARAM=$(echo "$@" | sed 's/\-r\ [0-9]//' | sed 's/\-c//')
-      echo "*/${recurrenceminutes} * * * * root bash ${SCRIPTNAME} ${STRIPEDRPARAM} -c" | $SUDO tee -a /etc/crontab > /dev/null
-      $SUDO chown root:root /etc/crontab
-      $SUDO chmod 644 /etc/crontab
-    fi
+    RemoveCronJobIfItExists #In case we are updating an existing job
+    #Strip -r or else the cron job will just keep rescheduling itself.  
+    #Strip -c if it exists so we wont have two when we insert -c
+    STRIPEDRPARAM=$(echo "$@" | sed 's/\-r\ [0-9]//' | sed 's/\-c//')
+    echo "*/${recurrenceminutes} * * * * root bash ${SCRIPTNAME} ${STRIPEDRPARAM} -c" | $SUDO tee -a /etc/crontab > /dev/null
+    $SUDO chown root:root /etc/crontab
+    $SUDO chmod 644 /etc/crontab
     exit 0
   else
     echo "Running FIO now..."
@@ -320,6 +326,7 @@ if [[ ! -z "${blkdevlist[*]}" ]]; then
       echo "INFO: ${DONEMARKERFILE} would need to be removed to either run or schedule again."
       echo $(date) > "${DONEMARKERFILE}"
       RemoveCronJobIfItExists
+      RemoveCronScriptIfItExists
     else
       echo "fio did not complete successfully."
     fi
@@ -328,6 +335,7 @@ fi
 if [[ -n "${crontriggeredrun}" ]]; then
   echo "Completed successfully, removing cron job"
   RemoveCronJobIfItExists
+  RemoveCronScriptIfItExists
 fi
 
 
