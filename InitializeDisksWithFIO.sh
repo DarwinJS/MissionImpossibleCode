@@ -175,7 +175,6 @@ while getopts ":cbvhud:n:s:r:" opt; do
       ;;
     v)
       EmitVersion
-      exit 0
       ;;
     h)
       usage
