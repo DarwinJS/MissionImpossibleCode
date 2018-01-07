@@ -269,6 +269,11 @@ if [[ -z "$(command -v fio)" ]] ; then
     FIOPATHNAME="$(command -v fio)"
   fi
   popd
+fi
+
+if [[ -z "$(command -v fio)" ]] ; then
+  echo "Error: Was unable to find or install FIO, exiting."
+  exit 2
 else
   FIOPATHNAME="$(command -v fio)"
 fi
