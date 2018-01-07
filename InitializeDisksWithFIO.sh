@@ -237,13 +237,9 @@ if [[ -z "$(command -v fio)" ]] ; then
       elif [[ -f /etc/system-release ]] ; then
         REV=`cat /etc/system-release | sed s/.*release\ // | sed s/\ .*//`
       fi
-      REVMAJOR="$(echo $REV | awk -F \. {'print $1'})"
-      echo "DIST is ${DIST}"
-      echo "REVMAJOR is $REVMAJOR"
-      if [[ $DIST == *"Amazon Linux"* ]] ; then
-        sudo yum-config-manager --enable epel
-        repoenabled=true                
-      else
+      echo "Running on ${DIST} version ${REV}"
+      if [[ ! ($DIST == *"Amazon Linux"* && $REV == "2.0") ]] ; then
+        #Amazon Linux 2.0 has fio in it's standard repo, no need to enable anything
         wget https://dl.fedoraproject.org/pub/epel/epel-release-latest-$REVMAJOR.noarch.rpm
         $SUDO yum install -y ./epel-release-latest-*.noarch.rpm
       fi
