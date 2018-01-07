@@ -4,7 +4,7 @@
 set -o errexit
 set -eo pipefail
 
-SCRIPT_VERSION=1.5
+SCRIPT_VERSION=1.6
 SCRIPTNETLOCATION=https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/InitializeDisksWithFIO.sh
 REPORTFILE=/var/tmp/initializediskswithfioreport.txt
 DONEMARKERFILE=/var/tmp/initializediskswithfio.done
@@ -25,6 +25,7 @@ usage(){
   -u - unschedule (if scheduled)
   -r <int> - schedule to run every x minutes.  Range: 1 to 59.
       Use for: (a) synchcronous (parallel) execution, (b) reboot resilience, (c) run after other automation complete (max 59 mins).
+      Can re-write schedule by re-running with -r.
       Once device initialization is successfully accomplished, script removes itself from cron and from the system.
       When -r is not used, the command runs asyncrhonously.
   -d - space seperated list of block devices, when not used, all local, writable, non-removable devices are initialized.
@@ -34,19 +35,18 @@ usage(){
 
   Examples:
     $0    # (no args) initialize all local, writable, non-removable disk devices immediately
+    $0 -r 5 # schedule every 5 minutes to initialize all local, writable, non-removable disk devices immediately
+
     $0 -d \"sda xda\" # initialize specified devices at /dev/
     $0 -d \"/dev/sda /dev/xda\" # initialize specified devices at full device path as specified
     $0 -d \"/dev/sda1\" # initialize specified partition at full device path as specified
-    $0 -n 5 # use specified nice cpu priority to initialize all local, writable, non-removable disk devices, range -20 to 19
-    $0 -b -v # emit only script version (good for comparing whether local version is older than latest online version)
-    $0 -r 5 # schedule every 5 minutes (only a single instance ever runs), range: 1-59
-    
-    RUN FROM GITHUB:
-    bash <(wget -O - https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/InitializeDisksWithFIO.sh) <arguments>
 
-    DOWNLOAD FROM GITHUB:
-    wget https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/InitializeDisksWithFIO.sh -O /tmp/InitializeDisksWithFIO.sh
-    /tmp/InitializeDisksWithFIO.sh -b -v
+    $0 -n 5 # use specified nice cpu priority to initialize all local, writable, non-removable disk devices
+    $0 -b -v # emit only script version (good for comparing whether local version is older than latest online version)
+    
+    DOWNLOAD AND RUN FROM GITHUB:
+    
+    wget https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/InitializeDisksWithFIO.sh -O /tmp/InitializeDisksWithFIO.sh ; sudo bash /tmp/InitializeDisksWithFIO.sh -b -v
 
   Features:
     Deploying Solution
@@ -70,7 +70,7 @@ usage(){
     - takes device list (full path or just last path part) (use -d)
     - if no device list, enumerates all local, writable, non-removable devices 
       (override incorrect device detection by specifying device list)
-    - emits version (can be used to update or warn when a local copy is older than the latest online version)
+    - emits bare version (can be used to update or warn when a local copy is older than the latest online version)
 
     Completion and Cleanup (when fio runs to completion)
     - saves fio output report
@@ -84,6 +84,11 @@ usage(){
       before running the schedule command, this approach also handles a custom hosted location:
       wget https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/InitializeDisksWithFIO.sh -O /tmp/InitializeDisksWithFIO.sh
       bash /tmp/InitializeDisksWithFIO.sh -r 5
+  
+  Notes and Code for Update Checking:
+    The below oneliner that gives an INFO message that the current version is not up to date.
+    Note local persisted location "/opt/scripts" should be updated with where you stage the script locally.
+    [[ `echo "$(sudo bash /opt/scripts/InitializeDisksWithFIO.sh -b -v) $(wget https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/InitializeDisksWithFIO.sh -O /tmp/InitializeDisksWithFIO.sh ; sudo bash /tmp/InitializeDisksWithFIO.sh -b -v)" | awk '{print ($1 <= $2)}'` == 1 ]] && echo "INFO: Running an old version"
 
 EndOfHereDocument1
 }
@@ -110,7 +115,7 @@ fi
 
 RemoveCronJobIfItExists(){
 if [[ ! -z "$($SUDO cat /etc/crontab | grep '/etc/cron.d/InitializeDisksWithFIO.sh')" ]]; then
-  echo "Removing cron job"
+  echo "Removing cron job if it exists  "
   FILECONTENTS=`cat /etc/crontab` ; echo "${FILECONTENTS}" | grep -v '/etc/cron.d/InitializeDisksWithFIO.sh'  | $SUDO tee /etc/crontab > /dev/null
   $SUDO chown root:root /etc/crontab
   $SUDO chmod 644 /etc/crontab
@@ -305,6 +310,7 @@ if [[ ! -z "${blkdevlist[*]}" ]]; then
     RemoveCronJobIfItExists #In case we are updating an existing job
     #Strip -r or else the cron job will just keep rescheduling itself.  
     #Strip -c if it exists so we wont have two when we insert -c
+    echo "Adding cron job"
     STRIPEDRPARAM=$(echo "$@" | sed 's/\-r\ [0-9]//' | sed 's/\-c//')
     echo "*/${recurrenceminutes} * * * * root bash ${SCRIPTNAME} ${STRIPEDRPARAM} -c" | $SUDO tee -a /etc/crontab > /dev/null
     $SUDO chown root:root /etc/crontab
