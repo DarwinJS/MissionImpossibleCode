@@ -8,7 +8,7 @@ If (!(Test-Path env:chocolateyinstall))
   write-host "Installing Chocolatey..."
   iwr https://chocolatey.org/install.ps1 -UseBasicParsing | iex
 }
-choco install -y powershell-core visualstudiocode
+choco upgrade -y powershell-core visualstudiocode
 code --install-extension ms-vscode.PowerShell
 
 Write-Host "How to setup core as the default PowerShell for visual studio code: "
