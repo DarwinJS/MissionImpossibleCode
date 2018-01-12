@@ -11,5 +11,7 @@ If (!(Test-Path env:chocolateyinstall))
 choco upgrade -y powershell-core visualstudiocode
 code --install-extension ms-vscode.PowerShell
 
-Write-Host "How to setup core as the default PowerShell for visual studio code: "
-Write-Host " https://github.com/PowerShell/PowerShell/blob/master/docs/learning-powershell/using-vscode.md"
+Write-Host "*********************************************************************"
+Write-Host " How to setup core as the default PowerShell for visual studio code: "
+Write-Host "  https://github.com/PowerShell/PowerShell/blob/master/docs/learning-powershell/using-vscode.md"
+Write-Host
