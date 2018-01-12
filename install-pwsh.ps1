@@ -1,8 +1,8 @@
 <#
 Run this with: 
-Invoke-Expression (invoke-webrequest -uri 'https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/install-pwsh.ps1') ; Install-SysinternalsTool
+Invoke-Expression (invoke-webrequest -uri 'https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/install-pwsh.ps1') ; install-pwsh
 # Include IDE
-Invoke-Expression (invoke-webrequest -uri 'https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/install-pwsh.ps1') ; Install-SysinternalsTool -includeide
+Invoke-Expression (invoke-webrequest -uri 'https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/install-pwsh.ps1') ; install-pwsh -includeide
 
 #>
 
