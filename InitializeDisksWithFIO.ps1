@@ -10,7 +10,7 @@ To use a different default tool list, call the code like this:
 Invoke-Expression (invoke-webrequest -uri 'https://raw.githubusercontent.com/DarwinJS/WindowsEscalationToolkit/master/InitializeDisksWithFIO.ps1') ; Invoke-FIO -DeviceIDsToInitialize
 
 #>
-Function Invoke-FIO {
+#Function Invoke-FIO {
 Param (
   [String]$DeviceIDsToInitialize,
   [Switch]$Version,
@@ -117,14 +117,14 @@ if ($RepeatIntervalMinutes -ge 1)
       Write-Host "SCHEDULING: downloading ${SCRIPTNETLOCATION}"
       Invoke-WebRequest -Uri $SCRIPTNETLOCATION -OutFile $SharedWritableLocation\$((("$SCRIPTNETLOCATION") -split '/') | select -last 1)
     }
-    elseif ($myinvocation.MyCommand.Definition -ieq $SharedWritableLocation\$((("$SCRIPTNETLOCATION") -split '/')))
+    elseif ($script:myinvocation.MyCommand.path -ieq "$SharedWritableLocation\$(($SCRIPTNETLOCATION -split '/') | select -last 1)")
     {
       Write-Host "Already running from correct location"
     }
     Else
     {
-      Write-Host "Copying `"$($myinvocation.MyCommand.Definition)`" to `"$SharedWritableLocation\$((("$SCRIPTNETLOCATION") -split '/'))`""
-      Copy-item $($myinvocation.MyCommand.Definition) "$SharedWritableLocation\$((("$SCRIPTNETLOCATION") -split '/'))"
+      Write-Host "Copying `"$($script:myinvocation.MyCommand.path)`" to `"$SharedWritableLocation\$(($SCRIPTNETLOCATION -split '/') | select -last 1)`""
+      Copy-item "$($script:myinvocation.MyCommand.path)" "$SharedWritableLocation\$(($SCRIPTNETLOCATION -split '/') | select -last 1)" -force
     }
   <#
     RemoveCronJobIfItExists #In case we are updating an existing job
@@ -170,4 +170,4 @@ if [[ -n "${crontriggeredrun}" ]]
   RemoveCronScriptIfItExists
 }
 #>
-}
+#}
