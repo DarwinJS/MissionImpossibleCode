@@ -9,6 +9,7 @@ SCRIPTNETLOCATION=https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutoma
 REPORTFILE=/var/tmp/initializediskswithfioreport.txt
 DONEMARKERFILE=/var/tmp/initializediskswithfio.done
 
+
 usage(){
   cat <<- EndOfHereDocument1
 
