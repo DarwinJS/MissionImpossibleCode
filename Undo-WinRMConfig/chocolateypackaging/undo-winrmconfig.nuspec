@@ -6,8 +6,9 @@
     <title>Disable winrm through a self-deleting shutdown task.</title>
     <authors>DarwinJS</authors>
     <owners>DarwinJS</owners>
-    <!--<projectUrl>Blog Article</projectUrl>
-    <packageSourceUrl></packageSourceUrl>-->
+    <iconUrl>https://cdn.rawgit.com/DarwinJS/CloudyWindowsAutomationCode/ed51b898/Undo-WinRMConfig/chocolateypackaging/cloudywindows128.png</iconUrl>
+    <!--<projectUrl>Blog Article</projectUrl>-->
+    <packageSourceUrl>https://github.com/DarwinJS/CloudyWindowsAutomationCode/tree/master/Undo-WinRMConfig</packageSourceUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Disable winrm through a self-deleting shutdown task.
      Many windows remote orchestration tools (e.g. Packer) instruct you to completely open up winrm permissions in a way that is not safe for production.

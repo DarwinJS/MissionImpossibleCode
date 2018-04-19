@@ -4,12 +4,12 @@
   <metadata>
     <id>undo-winrmconfig-on-shutdown</id>
     <version>1.1.4</version>
-    <!-- <packageSourceUrl>Where is this Chocolatey package located (think GitHub)? packageSourceUrl is highly recommended for the community feed</packageSourceUrl>-->
+    <packageSourceUrl>https://github.com/DarwinJS/CloudyWindowsAutomationCode/tree/master/Undo-WinRMConfig</packageSourceUrl>
     <owners>DarwinJS</owners>
-    <title>undo (Install)</title>
+    <title>undo-winrmconfig-at-shutdown (Install)</title>
     <authors>DarwinJS</authors>
     <projectUrl>https://cloudywindows.io/landingpage</projectUrl>
-    <!--<iconUrl>http://cdn.rawgit.com/__REPLACE_YOUR_REPO__/master/icons/undo.png</iconUrl>-->
+    <iconUrl>https://cdn.rawgit.com/DarwinJS/CloudyWindowsAutomationCode/ed51b898/Undo-WinRMConfig/chocolateypackaging/cloudywindows128.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <!--<docsUrl>At what url are the software docs located?</docsUrl>-->
     <!--<mailingListUrl></mailingListUrl>-->
