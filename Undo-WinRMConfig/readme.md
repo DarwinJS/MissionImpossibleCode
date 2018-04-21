@@ -31,6 +31,7 @@ This code was engineered by reversing the commands required to configure winrm t
 
 If your WinRM configuration process involves configuring additional items, the reversal of those settings may need to be added to this script.  You could create a customized copy or submit an issue or PR against this script.
 
+This code was engineered and tested on Server 2012 R2 / PowerShell 4 - it is unknown how well it works for earlier versions.
 ## Ways to Run It
 
 ### Direct Run From GitHub
