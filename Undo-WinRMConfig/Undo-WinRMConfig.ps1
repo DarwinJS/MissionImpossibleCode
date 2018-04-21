@@ -1,32 +1,57 @@
-
-$packageid = "disablewinrm-on-shutdown"
-
 <#
-     Many windows remote orchestration tools (e.g. Packer) instruct you to completely open up winrm permissions in a way that is not safe for production.
-     Usually there is no built in method nor instruction on how to re-secure it or shut it back down.
-     The assumption most likely being that you would handle proper configuration as a part of production deployment.
-     This is not a least privileged approach - depending on how big your company is and how widely your hypervisor templates are used - this is a disaster waiting to happen.  So I feel leaving it in a disabled state by default is the far safer option.
-     To complicate things, if you attempt to secure winrm or shut it down as your last step in orchestration you slam the door on the orchestration system and it marks the attempt as a failure.
-     Due to imprecise timing, start up tasks that disable winrm could conflict with a subsequent attempt to re-enable it on the next boot for final configuration steps (especially if you are building a hypervisor template).
-     This self-deleting shutdown task performs the disable on the first shutdown and deletes itself.
-     If a system shutsdown extremely quickly there is some risk that the shutdown job would not be deleted - but in testing on AWS (very fast shutdown), there have not been an observed problems.
+.SYNOPSIS
+  Initializes (full read of all bytes) AWS EBS volumes using FIO (File IO Utility).
+  See this post for full details on why this code is helpful: https://cloudywindows.io/winrm-for-provisioning---close-the-door-when-you-are-done-eh/
+.DESCRIPTION
+  CloudyWindows.io DevOps Automation: https://github.com/DarwinJS/CloudyWindowsAutomationCode
+  Why and How Blog Post: https://cloudywindows.io/winrm-for-provisioning---close-the-door-when-you-are-done-eh/
+  Invoke-Expression (invoke-webrequest -uri 'https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/Undo-WinRMConfig/Undo-WinRMConfig.ps1')
+  Invoke-webrequest -uri 'https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/Undo-WinRMConfig/Undo-WinRMConfig.ps1' -outfile $env:public\Undo-WinRMConfig.ps1 ; & $env:public\Undo-WinRMConfig.ps1 -immediately
+  
+  Disclaimer - this code was engineered and tested on Server 2012 R2.
+
+  Many windows remote orchestration tools (e.g. Packer) instruct you to completely open up winrm permissions in a way that is not safe for production.
+  Usually there is no built in method nor instruction on how to re-secure it or shut it back down.
+  The assumption most likely being that you would handle proper configuration as a part of production deployment.
+  This is not a least privileged approach - depending on how big your company is and how widely your hypervisor templates are used - this is a disaster waiting to happen.  So I feel leaving it in a disabled state by default is the far safer option.
+  To complicate things, if you attempt to secure winrm or shut it down as your last step in orchestration you slam the door on the orchestration system and it marks the attempt as a failure.
+  Due to imprecise timing, start up tasks that disable winrm could conflict with a subsequent attempt to re-enable it on the next boot for final configuration steps (especially if you are building a hypervisor template).
+  This self-deleting shutdown task performs the disable on the first shutdown and deletes itself.
+  If a system shutsdown extremely quickly there is some risk that the shutdown job would not be deleted - but in testing on AWS (very fast shutdown), there have not been an observed problems.
+  Updates and more information on ways to use this script are here: https://github.com/DarwinJS/CloudyWindowsAutomationCode/blob/master/Undo-WinRMConfig/readme.md
+.COMPONENT
+   CloudyWindows.io
+.ROLE
+  Provisioning Automation
+.PARAMETER RunImmediately
+  Specifies list of semi-colon seperated number ids of local Devices to initialize.  Devices appear in HKLM:SYSTEM\CurrentControlSet\Services\disk\Enum.
+.EXAMPLE
+  Invoke-Expression (invoke-webrequest -uri 'https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/Undo-WinRMConfig/Undo-WinRMConfig.ps1')
+  
+  Run directly from github with no parameters - sets up shutdown script to reseal winRM.
+.EXAMPLE
+  Invoke-webrequest -uri 'https://raw.githubusercontent.com/DarwinJS/CloudyWindowsAutomationCode/master/Undo-WinRMConfig/Undo-WinRMConfig.ps1' -outfile $env:public\Undo-WinRMConfig.ps1 ; & $env:public\Undo-WinRMConfig.ps1 -immediately
+
+  Download dynamically from github and run immediately.
 #>
 Param (
-  [switch]$RunImmediately
+  [switch]$RunImmediately,
+  [switch]$RemoveShutdownScriptSetup
 )
 
-$UndoWinRMScript = @"
+$UndoWinRMScript = @'
 winrm set winrm/config/service '@{AllowUnencrypted="false"}'
 winrm set winrm/config/service/auth '@{Basic="false"}'
+winrm set "winrm/config/service/auth" '@{CredSSP="false"}'
 winrm delete winrm/config/Listener?Address=*+Transport=HTTP
 Disable-PSRemoting
 netsh advfirewall firewall delete rule name="Windows Remote Management (HTTP-In)"
-"@
+'@
 
 If ($RunImmediately)
 {
   Write-Output 'Disabling PS Remoting Right Now (do NOT execute this over remoting or this code will not complete)...'  
-  #Run $UndoWinRMScript
+  Invoke-Command -ScriptBlock [Scriptblock]::Create($UndoWinRMScript)
   exit 0
 }
 else 
@@ -45,18 +70,26 @@ $ScriptFolder = (Split-Path -parent $scriptpath)
 
 $selfdeletescript = @"
 Start-Sleep -milliseconds 500
-Remove-Item "$key1" -Force -Recurse
-Remove-Item "$key2" -Force -Recurse
-Remove-Item "$scriptpath" -Force
-#Remove-Item "$selfdeletescriptpath" -Force
-(Get-Content "$psScriptsFile") -replace '0CmdLine=$scriptfilename', '' | Set-Content "$psScriptsFile"
-(Get-Content "$psScriptsFile") -replace '0Parameters=', '' | Set-Content "$psScriptsFile"
-#If ($Error) {`$Error | fl * -force | out-string | out-file "$env:public\selfdeleteerrors.txt"}
+Remove-Item -Path "$key1" -Force -Recurse -ErrorAction SilentlyContinue
+Remove-Item -Path "$key2" -Force -Recurse -ErrorAction SilentlyContinue
+Remove-Item -Path $scriptpath -Force  -ErrorAction SilentlyContinue
+If (Test-Path $psScriptsFile)
+{
+  (Get-Content "$psScriptsFile") -replace '0CmdLine=$scriptfilename', '' | Set-Content "$psScriptsFile"
+  (Get-Content "$psScriptsFile") -replace '0Parameters=', '' | Set-Content "$psScriptsFile"
+}
 "@
 
-$UndoWinRMScript += "Register-ScheduledJob -Name CleanUpWinRM -RunNow -ScheduledJobOption @{RunElevated=$True;ShowInTaskScheduler=$True;RunWithoutNetwork=$True} -ScriptBlock $selfdeletescript"
-
 $selfdeletescript =[Scriptblock]::Create($selfdeletescript)
+
+If ($RemoveShutdownScriptSetup)
+{
+  Write-Host "Removing previously setup shutdown script"
+  Invoke-Command -ScriptBlock $selfdeletescript
+  exit $?
+}
+
+$UndoWinRMScript += "Register-ScheduledJob -Name CleanUpWinRM -RunNow -ScheduledJobOption @{RunElevated=$True;ShowInTaskScheduler=$True;RunWithoutNetwork=$True} -ScriptBlock $selfdeletescript"
 
 If (!(Test-Path $ScriptFolder)) {New-Item $ScriptFolder -type Directory -force}
 Set-Content -path $scriptpath -value $UndoWinRMScript
