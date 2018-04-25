@@ -40,10 +40,8 @@ Param (
 )
 
 $UndoWinRMScript = @'
-winrm set winrm/config/service '@{AllowUnencrypted="false"}'
-winrm set winrm/config/service/auth '@{Basic="false"}'
-winrm set "winrm/config/service/auth" '@{CredSSP="false"}'
-winrm delete winrm/config/Listener?Address=*+Transport=HTTP
+winrm invoke restore /winrm/config '@{}'
+winrm invoke restore /winrm/config/plugin '@{}'
 Disable-PSRemoting
 netsh advfirewall firewall delete rule name="Windows Remote Management (HTTP-In)"
 '@
