@@ -42,7 +42,6 @@ Param (
 $UndoWinRMScript = @'
 winrm invoke restore /winrm/config '@{}'
 winrm invoke restore /winrm/config/plugin '@{}'
-Disable-PSRemoting
 netsh advfirewall firewall delete rule name="Windows Remote Management (HTTP-In)"
 '@
 
