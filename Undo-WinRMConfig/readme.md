@@ -26,14 +26,14 @@ Tests for each below scenario:
 * "Can WinRm be rconfigured again with **conventional instructions** after this has run"
 
 Script Functionality:
-* (Default) Run and setup shutdown job (choco install)
-* Run immediately to Undo WinRM Configuration (don't run over remoting) (choco install -params '"/RunImmediately"' )
-* -RemoveShutdownScriptSetup (Choco Uninstall) - removes shutdown job before it runs (it self deletes during actual operation)
+* (Default) Run and setup shutdown job (direct script or github call with & choco install)
+* Run immediately to Undo WinRM Configuration (don't run over remoting) (direct script or github call with & choco install -params '"/RunImmediately"' )
+* -RemoveShutdownScriptSetup (direct script or github call with & Choco Uninstall) - removes shutdown job before it runs (it self deletes during actual operation)
 
 Run Scope:
-* Run Over Remoting (Choco / non-choco)
-* Run Under System Account (choco / non-choco)
-* Run under a system account service (choco / non-choco)
+* Run Over Remoting (direct script or github call with & choco)
+* Run Under System Account (direct script or github call with & choco)
+* Run under a system account service (direct script or github call with & choco)
 
 OS / PowerShell Scope:
 * Windows 7 / 2008 R2, Windows 8.1 / 2012 R2, Windows 10 / 2016
